@@ -1,3 +1,3 @@
-web: gunicorn PARCELMANAGER.wsgi:application --log-file - --log-level debug
-python manage.py collectstatic --noinput
+web: gunicorn PARCELMANAGER.wsgi --log-file -
+heroku ps:scale web=1
 manage.py migrate
