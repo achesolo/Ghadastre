@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-(((jm&irexgws-#=0)03sj$64qa)2p)cgyk%@36cr%#djve1)v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ghadastre.herokuapp.com']
 
 
 # Application definition
@@ -85,13 +85,24 @@ WSGI_APPLICATION = 'PARCELMANAGER.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres_gis',
-        'USER': 'postgres',
-        'PASSWORD': 'lord',
-        'HOST': 'localhost',
+        'NAME': '<DATABASE>',
+        'USER': '<USER>',
+        'PASSWORD': '<PASSWORD>',
+        'HOST': '<HOST>',
         'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'NAME': 'postgres_gis',
+#         'USER': 'postgres',
+#         'PASSWORD': 'lord',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
