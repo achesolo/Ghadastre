@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% load static %}
+
+    <style type="text/css">
+    .brass {
+      height: 80%;
+      margin-bottom: auto;
+      padding: 0;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+
+    #map {
+      width: 100%;
+      height: 70vh;
+    }
+
+    .containers {
+      /* width: 1370px; */
+      /* height: 455px; */
+      position: relative;
+
+    }
+
+    .box {
+      width: 100%;
+      height: 105%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0.7;
+    }
+
+    .overlay1 {
+      right: 0;
+      width: 50%;
+      height: 20%;
+      z-index: 9;
+      opacity: 0.8;
+    }
+
+<!--    .overlay1 {-->
+<!--      width: 52%;-->
+<!--      height: 20%;-->
+<!--      left: 0;-->
+<!--      bottom: 0;-->
+<!--      z-index: 9;-->
+<!--      opacity: 0.8;-->
+<!--    }-->
+  </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="{% static 'parcels/home.js' %}"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+
+    <title>Ghadastre</title>
+
+</head>
+
+<body style="background-color: black;">
+<header>
+
+    <nav>
+        <div class="nav-wrapper black white-text">
+            <div style="padding-left: 15px; padding-right: 15px;">
+
+                <a href="{% url 'homepage' %}" class="brand-logo left">Ghadastre</a>
+                <ul class="right show-on-med-and-down valign-wrapper">
+                    {% if request.user.is_authenticated %}
+                    <li class=""><a href="#" class="waves-effect white-text dropdown-trigger" data-target='dropdown1'>
+                        <i class="material-icons left">account_circle</i>
+                        {{ request.user.username }}
+                        <i class="material-icons right">arrow_drop_down</i></a></li>
+                    {% else %}
+                    <li class=""><a href="{% url 'signin' %}" class="waves-effect grey-effect white-text">Sign In</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <ul id='dropdown1' class='dropdown-content'>
+        <li><a href="{% url 'accountsettings' %}" class="black-text">Account Settings</a></li>
+        <li class="divider" tabindex="-1"></li>
+        <li><a href="{% url 'signout' %}" class="black-text"><i class="material-icons">power_settings_new</i>Sign Out</a></li>
+    </ul>
+</header>
+
+<body>
+<main>
+    <div class="containers">
+        <div id="map" class="box">
+
+        </div>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <div class="row box overlay1 valign-wrapper center" style="transform: translate(10%, 55px);">
+        <div class="col s12 m6 l8 white valign-wrapper" style="margin: 10px;">
+            <form class="left col s12 m6 l12 valign-wrapper">
+                <div class="input-field col s12 m6 l12">
+                    <input type="text" name="search" id="search" placeholder="Search" />
+                </div>
+
+                <a class="btn black waves-effect waves-light col sml4 valign-wrapper"
+                        onclick="search_parcel_general()">
+                    <i class="material-icons">search</i>
+                </a>
+            </form>
+
+            <a class="col sml4 waves-effect waves-light modal-trigger right valign-wrapper right" href="#"
+               data-target='modal2'>
+                <i class="material-icons">gps_fixed</i>
+            </a>
+            <a class="col sml4 waves-effect waves-light modal-trigger right valign-wrapper right" href="#"
+               data-target='modal3'>
+                <i class="material-icons">more_vert</i>
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+
+    {% endif %}
+
+</main>
+
+<footer class="page-footer black white-text" style=" position:fixed;bottom:0;left:0;width:100%;">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h6 class="white-text">Ghadastre</h6>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            © 2022 Copyright Ghadastre
+            <a class="grey-text text-lighten-4 right" href="{% url 'contributors' %}">Contributors</a>
+        </div>
+    </div>
+</footer>
+
+<div id="modal2" class="modal" style="width: 300px; height: 420px;">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col s12 l12">
+                <h5 class="center-align">Search Parcel By Point</h5>
+            </div>
+            <form>
+                <div style="padding: 10px; opacity: 1;">
+                    <div class="col l12 s12" style="width: 100%;">
+                        <div class="input-field">
+                            <input type="text" name="el" id="el" required/>
+                            <label for="el">Easting/Longitude</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" name="nl" id="nl" required/>
+                            <label for="nl">Northing/Latitude</label>
+                        </div>
+                    </div>
+                    <div class="col l12 s12" style="width: 100%;">
+                        <label>Select Coordinate System</label>
+                        <select class="browser-default" id="coordinatesystems" required>
+                            <option value="" disabled selected>
+                                Choose your option
+                            </option>
+                            {% if coordinatesystems %}
+                            {% for coordinatesystem in coordinatesystems %}
+                            <option value="{{ coordinatesystem.srid }}" id="{{ coordinatesystem.id }}">
+                                {{ coordinatesystem.name }} [unit: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }})]
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col l12 s12 right-align" style="margin-top: 20px;">
+                        <a class="black-text modal-close" href="#" type="submit"
+                           onclick="search_parcel_by_point()">OK</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="modal3" class="modal" style="width: 300px; height: 420px;">
+    <div class="modal-content">
+        <div class="row">
+            <div class="col s12 l12">
+                <h5 class="center-align">Search Parcel By Feature Type</h5>
+            </div>
+            <form>
+                <div style="padding: 10px; opacity: 1;">
+                    <div class="col l12 s12" style="width: 100%;">
+                        <label>Select Feature Type</label>
+                        <select class="browser-default" id="feature_type" required>
+                            <option value="" disabled selected>
+                                Choose your feature type
+                            </option>
+                            <option value="POINT">
+                                Point
+                            </option>
+                            <option value="POLYGON">
+                                Polygon
+                            </option>
+                        </select>
+
+                        <label>Select Coordinate System</label>
+                        <select class="browser-default" id="coordinatesystems2" required>
+                            <option value="" disabled selected>
+                                Choose your option
+                            </option>
+                            {% if coordinatesystems %}
+                            {% for coordinatesystem in coordinatesystems %}
+                            <option value="{{ coordinatesystem.srid }}" id="{{ coordinatesystem.id }}_2">
+                                {{ coordinatesystem.name }} [unit: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }})]
+                            </option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col l12 s12" style="width: 100%;">
+                        <div class="input-field">
+                            <textarea name="feature_coordinates" id="feature_coordinates" required></textarea>
+                            <label for="feature_coordinates">Enter coordinates</label>
+                        </div>
+                        <p><b>Coordinate Format:</b> <strong>{ Point=>x1 y1 | Polygon=>x1 y1, x2 y2, ...x1 y1 }</strong></p>
+                    </div>
+                    <div class="col l12 s12 right-align" style="margin-top: 20px;">
+                        <a class="black-text modal-close" href="#" type="submit"
+                           onclick="search_parcel_by_feature_type()">OK</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    // Instantiating the map object and setting the parameters
+    //
+    var attribute = 'EFKINITOS GROUP @ DEPARTMENT OF GEOMATIC ENGINEERING, KNUST';
+    var zoom = 6;
+    var maxzoom = 50;
+    var center = [7.023, 1.87];
+
+    var map = L.map('map', {
+	center: center,
+	zoom: zoom,
+	maxZoom: maxzoom,
+	crs: L.CRS.EPSG3857,
+    });
+
+    // Adjusting the position of the zoom controls
+    //
+    map.zoomControl.setPosition('bottomright');
+    map.attributionControl.setPrefix("");
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: attribute + ' &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+
+    // The variables for the various datatypes used
+    //
+    var parcels_data = {};
+    var selected_parcels = [];
+
+    {% if request.user.is_authenticated %}
+
+    {% for parcel in parcels %}
+
+     var url = "/parceldetail/" + "{{ parcel.code }}"
+     var popup_msg = "<b><h5>GHADASTRE</h5></b><hr><h6>" + "PARCEL ID:" + "<b> {{ parcel.code }}</b>" +
+     "</h6><p><h6>" + "AREA: " + "<b>{{ parcel.area | floatformat }}" + " {{ parcel.parcelCRS.unitsymbol }}" +
+     "²</b>" + "</h6></p><p><h6>" + "PERIMETER: " +"<b>{{ parcel.perimeter | floatformat }}" +
+     " {{ parcel.parcelCRS.unitsymbol }}</b>" + "</h6></p><p><h6><a href=" + url + "><b>More...</b></a></h6></p>";
+     var tooltip_msg = "{{ parcel.code }}";
+     var parcel_coordinates = convert_polygon_from_wkt("{{parcel.parcelboundaryWGS84.wkt}}");
+     var parcel_code = "{{ parcel.code }}";
+
+     var parcel_polygon = L.polygon(parcel_coordinates, {
+            color: 'blue',
+            fillOpacity: 0.1,
+            }).addTo(map);
+
+     parcel_polygon.bindPopup(popup_msg);
+
+     parcel_polygon.bindTooltip(tooltip_msg,
+        {permanent: true,
+         direction: center,
+         className: 'tooltip',
+     }).openTooltip();
+
+     var data = {
+        "map_item": parcel_polygon,
+        "coordinates": parcel_coordinates,
+        "code": parcel_code,
+        };
+
+     parcels_data["{{ parcel.code }}"] = data;
+
+    {% endfor %}
+
+    {% else %}
+
+    {% endif %}
+
+
+    function convert_point_from_wkt(wkt){
+            // wkt format =>> 'POINT (1 2)'
+            // required format =>> [6, 5]
+
+            var cleaned;
+            _wkt = wkt.split("(")[1].split(")")[0]
+
+            cleaned = _wkt.trim().split(" ");
+            var latitude = cleaned[0];
+            var longitude = cleaned[1];
+            cleaned = [longitude, latitude];
+
+            return cleaned;
+    };
+
+
+    function convert_multipoint_from_wkt(wkt){
+            // wkt format =>> 'MULTIPOINT (1 2, 0 0)'
+            // required format =>> [[6, 5], [9, 1], [6, 1], [6, 5]]
+
+            var cleaned = [];
+            var cleaned_detail;
+            _wkt = wkt.split("(")[1].split(")")[0].split(",");
+
+            for (let item_index in _wkt) {
+                   cleaned_detail = _wkt[item_index].trim().split(" ");
+                   var latitude = cleaned_detail[0];
+                   var longitude = cleaned_detail[1];
+                   cleaned_detail = [longitude, latitude];
+                   cleaned.push(cleaned_detail);
+                   var cleaned_detail;
+                };
+
+            return cleaned;
+    };
+
+
+    function convert_polygon_from_wkt(wkt){
+            // wkt format =>> 'POLYGON ((6 5, 9 1, 6 1, 6 5))'
+            // required format =>> [[6, 5], [9, 1], [6, 1], [6, 5]]
+
+            var cleaned = [];
+            var cleaned_detail;
+            _wkt = wkt.split("((")[1].split("))")[0].split(",");
+
+            for (let item_index in _wkt) {
+                   cleaned_detail = _wkt[item_index].trim().split(" ")
+                   var latitude = cleaned_detail[0];
+                   var longitude = cleaned_detail[1];
+                   cleaned_detail = [longitude, latitude];
+                   cleaned.push(cleaned_detail)
+                   var cleaned_detail;
+                };
+
+            return cleaned;
+    };
+
+
+    function highlight_selected_parcels(parcels){
+        var selected_parcels_map_items = [];
+
+        if (parcels !== null) {
+
+            // Resetting the parcels
+            for (let item_index in selected_parcels){
+                 selected_parcel = selected_parcels[item_index];
+
+                 parcels_data[selected_parcel].map_item.setStyle({
+                 color: 'blue',
+                 fillOpacity: 0.1,
+                 });
+            };
+
+            selected_parcels = [];
+
+            for (let item_index in parcels){
+                parcel = parcels[item_index];
+
+                selected_parcels.push(parcel.code);
+                parcels_data[parcel.code].map_item.setStyle({
+                color: 'red',
+                fillOpacity: 0.5,
+                });
+
+                // Note why this is done
+                selected_parcels_map_items.push(parcels_data[parcel.code].map_item)
+                };
+
+        }else{
+            alert("No Match Found!")
+        };
+
+        var selected_parcels_map_items_group = L.featureGroup(selected_parcels_map_items);
+        map.fitBounds(selected_parcels_map_items_group.getBounds());
+    };
+
+
+    function search_parcel_general() {
+      var search_term = document.getElementById('search').value;
+      var url = "/searchparcelgeneral/" + String(search_term);
+
+      fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+        .then(response => {
+          return response.json()
+        })
+        .then(parcels => {
+           highlight_selected_parcels(parcels);
+        });
+
+    };
+
+
+    function search_parcel_by_point(){
+        // Note that the URL is hardcoded
+        // Must be changed anytime the view URL changes
+        var el = document.getElementById('el').value;
+        var nl = document.getElementById('nl').value;
+        var srid = document.getElementById('coordinatesystems').value;
+        var url = "/searchparcelbypoint/" + String(el) + "/" + String(nl) + "/" + String(srid);
+
+        fetch(url, {
+        method: "GET",
+        headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => {
+            return response.json()
+        })
+        .then(parcels => {
+            highlight_selected_parcels(parcels);
+        })
+        .catch(error => {
+            alert("Failed! \nFill all input fields");
+        })
+    };
+
+
+    function search_parcel_by_feature_type(){
+        // Note that the URL is hardcoded
+        // Must be changed anytime the view URL changes
+
+        var featuretype = document.getElementById('feature_type').value;
+        var featurecoords = document.getElementById('feature_coordinates').value;
+        var feature;
+
+        if (featuretype === 'POINT'){
+            feature = "POINT (" + String(featurecoords) + ")";
+        }else {
+            feature = "POLYGON ((" + String(featurecoords) + "))";
+        };
+
+        var srid = document.getElementById('coordinatesystems2').value;
+        var url = "/searchparcelbyfeaturetype/" + feature + "/" + String(srid);
+
+        fetch(url, {
+        method: "GET",
+        headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => {
+            return response.json()
+        })
+        .then(parcels => {
+            highlight_selected_parcels(parcels);
+        })
+        .catch(error => {
+            alert("Failed! \nFill all input fields");
+        })
+    };
+
+</script>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.dropdown-trigger');
+      var instances = M.Dropdown.init(elems, {
+        coverTrigger: false,
+        constrainWidth: false,
+      });
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var elems = document.querySelectorAll('.modal');
+      var instances = M.Modal.init(elems, {});
+    });
+  </script>
+<script>
+    window.addEventListener("DOMContentLoaded", event => {
+      const options = {
+        duration: 300,
+        onShow: null,
+        swipeable: false,
+        responsiveThreshold: Infinity
+      };
+
+      const tabsContainer = document.querySelector(".tabs");
+      M.Tabs.init(tabsContainer, options);
+    });
+  </script>
+  <script>
+  // This function is for getting the csrf_token cookie value
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+          for (let i=0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+               if (cookie.subString(0, name.length + 1) === (name + "=")) {
+                   cookieValue = decodeURIComponent(cookie.subString(name.length + 1));
+                   break;
+                   }
+                }
+            }
+        return cookieValue;
+    };
+  </script>
+</html>

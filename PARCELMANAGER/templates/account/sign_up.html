@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+      .brass {
+        height: 80% ; margin-bottom: auto; padding: 0;
+    }
+    body {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1 0 auto;
+      }
+      /* width */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    span.field-icon {
+        float: right;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <title>GoodLands</title>
+  </head>
+<body>
+	<header>
+		<nav>
+        <div class="nav-wrapper black white-text">
+          <div style="padding-left: 15px; padding-right: 15px;">
+            <a href="#" class="brand-logo center">GoodLands</a>
+            <ul class="right show-on-med-and-down valign-wrapper">
+              <li class="hide"><a href="#" data-target="modal1" class="waves-effect white-text modal-trigger">
+                  Sign Up | Sign In</a></li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+	</header>
+	<main style="padding-bottom: 100px;">
+    <div class="container">
+    <div class="row">
+		<div class=" col l7 s12" style="border-right-color: grey ;padding-right: 20px;border-right-width: 1px; border-right-style:  solid;margin-top: 20px;">
+      <h4 class="center">Sign Up</h4>
+        <form action="." method="post">
+            <div class="col s12 l12"  style="margin-top: -20px;">
+            <div class='input-field'>
+                <i class="material-icons prefix">account_circle</i>
+                <input class='validate' type="text" name='username' id='username' required />
+                <label for='text'>Username</label>
+            </div>
+            </div>
+
+             <div class="col s12 l12"  style="margin-top: -20px;">
+              <div class='input-field'>
+                <i class="material-icons prefix">email</i>
+                <input class='validate' type="email" name='email' id='email' required />
+                <label for='email'>Email</label>
+              </div>
+
+             <div class="col s12 l12"  style="margin-top: -20px; margin-left: -12px; width: 105%;">           
+              <div class='input-field'>
+                <i class="material-icons prefix">lock</i>
+                <input class='validate' type='password' name='password1' id='password1' />
+                <label for='email'>Type password</label>
+                <span toggle="#password1" class="field-icon toggle-password"><span class="material-icons">visibility</span></span>
+              </div>
+              </div>
+
+              <div class="col s12 l12"  style="margin-top: -20px; margin-left: -12px; width: 105%;">
+              <div class='input-field'>
+                <i class="material-icons prefix">lock</i>
+                <input class='validate' type='password' name='password2' id='password2' />
+                <label for='email'>Retype password</label>
+                <span toggle="#password2" class="field-icon toggle-password"><span class="material-icons">visibility</span></span>
+              </div>
+              </div>
+
+                 {% csrf_token %}
+          <button type="submit" class="modal-close waves-effect waves-green btn-flat black-text right">Sign Up</a></button>
+        </form>
+
+<footer class="page-footer black white-text" style=" position:fixed;bottom:0;left:0;width:100%;">
+  <div class="container">
+    <div class="row">
+      <div class="col l6 s12">
+        <h6 class="white-text">GoodLands</h6>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright">
+    <div class="container">
+    © 2022 Copyright Text
+    <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+    </div>
+  </div>
+</footer>
+</body>
+<script type="text/javascript">
+  var clicked = 0;
+
+  $(".toggle-password").click(function (e) {
+     e.preventDefault();
+
+    $(this).toggleClass("toggle-password");
+      if (clicked == 0) {
+        $(this).html('<span class="material-icons">visibility_off</span >');
+         clicked = 1;
+      } else {
+         $(this).html('<span class="material-icons">visibility</span >');
+          clicked = 0;
+       }
+
+    var input = $($(this).attr("toggle"));
+    if (input.attr("type") == "password") {
+       input.attr("type", "text");
+    } else {
+       input.attr("type", "password");
+    }
+});
+</script>
+</html>
+ 
+
+
+
+ 
+
+
+
+  

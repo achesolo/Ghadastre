@@ -1,0 +1,50 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="5">
+            <item index="0" class="java.lang.String" itemvalue="csrf_token" />
+            <item index="1" class="java.lang.String" itemvalue="+" />
+            <item index="2" class="java.lang.String" itemvalue="{%" />
+            <item index="3" class="java.lang.String" itemvalue="%}" />
+            <item index="4" class="java.lang.String" itemvalue="stylesheet" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="W292" />
+          <option value="E111" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N806" />
+          <option value="N801" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="counter.CashRegister.totalPrice" />
+          <option value="counter.CashRegister.itemCount" />
+          <option value="list.close" />
+          <option value="int.split" />
+          <option value="int.__getitem__" />
+          <option value="float.__getitem__" />
+          <option value="orders_page.product_catalog.set_displayed_products_filter_ui.Set_Displayed_Products_Filter.__getitem__" />
+          <option value="tuple._fields" />
+          <option value="tuple._make" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

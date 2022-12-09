@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% load static %}
+    <style type="text/css">
+    .brass {
+      height: 80%;
+      margin-bottom: auto;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    span.field-icon {
+      float: right;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+      z-index: 2;
+    }
+  </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <title>Ghadastre</title>
+</head>
+
+<body>
+<header style=" position:fixed;top:0;left:0; right: 0;width:100%;">
+    <nav>
+        <div class="nav-wrapper black white-text">
+            <div style="padding-left: 15px; padding-right: 15px;">
+
+                <a href="{% url 'homepage' %}" class="brand-logo left">Ghadastre</a>
+                <ul class="right show-on-med-and-down valign-wrapper">
+<!--                    <li class="hide"><a href="#" data-target="modal1" class="waves-effect white-text modal-trigger">Sign Up | Sign In</a></li>-->
+<!--                    <li><a href="#" class="waves-effect white-text"><i class="material-icons left">account_circle</i>-->
+<!--                        {{request.user.username}}</a></li>-->
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main style="margin-bottom: 100px;">
+    <div class="container" style="margin-top: 80px;">
+        <div class="row">
+            <div class=" col l7 s12" style="border-right-color: grey ;padding-right: 20px;border-right-width: 1px; border-right-style:  solid;">
+                <h3 class="center">Sign In</h3>
+                <div class="container">
+
+                    <form action="." method="post">
+                        <div class='input-field'>
+                            <i class="material-icons prefix">account_circle</i>
+                            <input class='active validate' type="text" name='username' id='username' required value="{{username}}"/>
+                            <label for='username'>username</label>
+                        </div>
+
+                        <div class='input-field'>
+                            <i class="material-icons prefix">lock</i>
+                            <input class='validate' type='password' name='password' id='password' required
+                                   value="{{password}}" onkeydown="remove_error_msg()"/>
+                            <label for='email'>Enter your password</label>
+                            <span class="field-icon toggle-password" onclick="toggle_password()">
+                                <span class="material-icons" id="password_icon">visibility_off</span></span>
+
+                            {% if not login_valid %}
+                                <i id="errormsg" style="font-family: sans-serif;" class="red-text right">
+                                    Invalid username or password!</i>
+                            {% endif %}
+                        </div>
+
+                        {% csrf_token %}
+
+                        <!-- <a class='blue-text right' href='#!'>Forgot Password?</a> -->
+                        <br>
+                        <button type="submit" class="waves-effect waves-green btn-flat black-text right">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="page-footer black white-text" style=" position:fixed;bottom:0;left:0;width:100%;">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h6 class="white-text">Ghadastre</h6>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            © 2022 Copyright Ghadastre
+            <a class="grey-text text-lighten-4 right" href="{% url 'contributors' %}">Contributors</a>
+        </div>
+    </div>
+</footer>
+</body>
+<script type="text/javascript">
+  var password_icon = document.getElementById('password_icon');
+
+   function toggle_password(){
+       if (String(password_icon.innerHTML) === "visibility"){
+            password_icon.innerHTML = "visibility_off";
+            document.getElementById('password').type = "password";
+       } else{
+            password_icon.innerHTML = "visibility";
+            document.getElementById('password').type = "text";
+       };
+   };
+
+
+   function remove_error_msg(){
+        document.getElementById('errormsg').remove();
+    };
+</script>
+
+</html>
