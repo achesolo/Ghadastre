@@ -1,1 +1,1 @@
-web: gunicorn PARCELMANAGER.PARCELMANAGER.wsgi
+web: gunicorn --pythonpath PARCELMANAGER PARCELMANAGER.wsgi
