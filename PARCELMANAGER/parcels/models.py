@@ -129,7 +129,7 @@ class Region(models.Model):
                                 on_delete=models.CASCADE, verbose_name="COUNTRY")
     regionboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_regions",
                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                          blank=True)
+                                          blank=True, null=True)
     regionboundaryDEFAULT = models.TextField(blank=True, null=True,
                                              verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     regionboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
@@ -245,7 +245,7 @@ class District(models.Model):
                                on_delete=models.CASCADE)
     districtboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_districts",
                                             on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                            blank=True)
+                                            blank=True, null=True)
     districtboundaryDEFAULT = models.TextField(blank=True, null=True,
                                                verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     districtboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
@@ -361,7 +361,7 @@ class Town(models.Model):
                                  on_delete=models.CASCADE)
     townboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_towns",
                                         on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                        blank=True)
+                                        blank=True, null=True)
     townboundaryDEFAULT = models.TextField(blank=True, null=True,
                                            verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     townboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
