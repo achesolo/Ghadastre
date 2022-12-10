@@ -12,11 +12,11 @@ class CoordinateSystemResource(resources.ModelResource):
         model = CoordinateSystem
 
 
-class CoordinateSystemAdmin(admin.ModelAdmin, ImportExportModelAdmin):
+class CoordinateSystemAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'srid', 'unitname', 'created', 'updated')
     search_fields = ('name', 'code', 'srid', 'unitname', 'created', 'updated')
 
-    resource_classes = [CoordinateSystemResource]
+    # resource_classes = [CoordinateSystemResource]
 
 
 class CountryResource(resources.ModelResource):
@@ -36,11 +36,11 @@ class RegionResource(resources.ModelResource):
         model = Region
 
 
-class RegionAdmin(LeafletGeoAdmin, ImportExportModelAdmin):
+class RegionAdmin(LeafletGeoAdmin):
     list_display = ('name', 'code', 'notes', 'created', 'updated')
     search_fields = ('name', 'code', 'notes', 'created', 'updated')
 
-    resource_classes = [RegionResource]
+    # resource_classes = [RegionResource]
 
 
 class DistrictResource(resources.ModelResource):
