@@ -3,7 +3,7 @@ from . views import homepageview, searchparcelgeneral, parceldetailview, parcelo
     searchparcelbypoint, searchparcelbyfeaturetype
 
 urlpatterns = [
-    path('', homepageview, name='homepage'),
+    path(r'^', homepageview, name='homepage'),
     path('searchparcelgeneral/<str:term>', searchparcelgeneral, name="searchparcelgeneral"),
     path('searchparcelbypoint/<str:easting_longitude>/<str:northing_latitude>/<str:srid>',
          searchparcelbypoint, name="searchparcelbypoint"),
