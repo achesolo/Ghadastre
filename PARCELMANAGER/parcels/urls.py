@@ -1,9 +1,9 @@
-from django.urls import path
+from django.urls import path, re_path
 from . views import homepageview, searchparcelgeneral, parceldetailview, parcelownerdetailview, \
     searchparcelbypoint, searchparcelbyfeaturetype
 
 urlpatterns = [
-    path(r'^', homepageview, name='homepage'),
+    re_path(r'^', homepageview, name='homepage'),
     path('searchparcelgeneral/<str:term>', searchparcelgeneral, name="searchparcelgeneral"),
     path('searchparcelbypoint/<str:easting_longitude>/<str:northing_latitude>/<str:srid>',
          searchparcelbypoint, name="searchparcelbypoint"),
