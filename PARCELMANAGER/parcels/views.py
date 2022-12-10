@@ -81,7 +81,7 @@ def parceldetailview(request, code):
     except Parcel.DoesNotExist:
         parcel = parcel
 
-    return render(request, "account/parcel_detail.html", {'parcel': parcel})
+    return render(request, "parcels/parcel_detail.html", {'parcel': parcel})
 
 
 def parcelownerdetailview(request, code):
@@ -92,7 +92,7 @@ def parcelownerdetailview(request, code):
     except ParcelOwner.DoesNotExist:
         parcelowner = parcelowner
 
-    return render(request, "account/parcelowner_detail.html", {"parcelowner": parcelowner})
+    return render(request, "parcels/parcelowner_detail.html", {"parcelowner": parcelowner})
 
 
 def homepageview(request):
@@ -100,6 +100,6 @@ def homepageview(request):
     coordinatesystems = CoordinateSystem.objects.all()
     parcels = Parcel.objects.all()
 
-    return render(request, "account/home.html", {
+    return render(request, "parcels/home.html", {
         'parcels': parcels, 'coordinatesystems': coordinatesystems})
 
