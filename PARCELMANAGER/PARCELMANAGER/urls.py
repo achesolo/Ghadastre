@@ -22,9 +22,9 @@ from django.views.static import serve
 
 
 urlpatterns = [
-    path('homepage/', include('parcels.urls')),
+    path('', include('parcels.urls')),
     path('admin/', admin.site.urls),
-    path('', include('account.urls')),
+    path('account/', include('account.urls')),
 ]
 
 # re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),

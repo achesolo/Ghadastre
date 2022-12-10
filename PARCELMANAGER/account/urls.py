@@ -4,7 +4,7 @@ from . views import sign_in_view, sign_out_view, sign_up_view, account_settings_
     contributors_view
 
 urlpatterns = [
-    path('', sign_in_view, name='signin'), # signin/
+    path('signin/', sign_in_view, name='signin'),
     path('signout/', sign_out_view, name='signout'),
     path('signup/', sign_up_view, name='signup'),
     path('accountsettings/', account_settings_view, name='accountsettings'),
