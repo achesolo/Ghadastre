@@ -25,10 +25,10 @@ urlpatterns = [
     path('', include('parcels.urls')),
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
-    # re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
-    # re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
+# re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+# re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
