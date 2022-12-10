@@ -18,5 +18,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'PARCELMANAGER.settings')
 application = django.core.handlers.wsgi.WSGIHandler()
 
 
-os.environ["DJANGO_SETTINGS_MODULE"] = "PARCELMANAGER.settings"
+# os.environ["DJANGO_SETTINGS_MODULE"] = "PARCELMANAGER.settings"
 
