@@ -42,7 +42,6 @@ ALLOWED_HOSTS = ['ghadastre.herokuapp.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'whitenoise',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -158,6 +157,8 @@ MEDIA_URL = '/media/'
 # Path where media is stored
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (0.023, 36.87),
@@ -176,5 +177,3 @@ import django_on_heroku
 django_on_heroku.settings(locals())
 
 DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
