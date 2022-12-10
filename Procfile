@@ -1,1 +1,1 @@
-web: gunicorn PARCELMANAGER.wsgi --log-file -
+web: gunicorn PARCELMANAGER.wsgi
