@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'leaflet',
-    'parcels',
-    'account',
+    'PARCELMANAGER.parcels',
+    'PARCELMANAGER.account',
 ]
 
 MIDDLEWARE = [
