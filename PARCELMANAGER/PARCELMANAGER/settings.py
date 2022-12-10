@@ -31,8 +31,8 @@ if os.name == 'nt':
 SECRET_KEY = 'django-insecure-99az87i9c#8q*foxx)uhvaj^5ksgxs_ay%y+n9=+08b!6_bsfy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['ghadastre.herokuapp.com']
