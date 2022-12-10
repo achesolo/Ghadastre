@@ -30,7 +30,7 @@ class Country(models.Model):
     name = models.CharField(max_length=250, unique=True, verbose_name="NAME")
     countryboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_countries",
                                            on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                           blank=True)
+                                           blank=True, null=True)
     countryboundaryDEFAULT = models.TextField(blank=True, null=True,
                                               verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     countryboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
