@@ -174,7 +174,7 @@ LEAFLET_CONFIG = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-import django_on_heroku
-django_on_heroku.settings(locals())
+# import django_on_heroku
+# django_on_heroku.settings(locals())
 
 DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
