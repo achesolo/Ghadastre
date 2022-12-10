@@ -48,11 +48,11 @@ class DistrictResource(resources.ModelResource):
         model = District
 
 
-class DistrictAdmin(LeafletGeoAdmin, ImportExportModelAdmin):
+class DistrictAdmin(LeafletGeoAdmin):
     list_display = ('name', 'code', 'notes', 'created', 'updated')
     search_fields = ('name', 'code', 'notes', 'created', 'updated')
 
-    resource_classes = [DistrictResource]
+    # resource_classes = [DistrictResource]
 
 
 class TownResource(resources.ModelResource):
@@ -60,11 +60,11 @@ class TownResource(resources.ModelResource):
         model = Town
 
 
-class TownAdmin(LeafletGeoAdmin, ImportExportModelAdmin):
+class TownAdmin(LeafletGeoAdmin):
     list_display = ('name', 'code', 'notes', 'created', 'updated')
     search_fields = ('name', 'code', 'notes', 'created', 'updated')
 
-    resource_classes = [TownResource]
+    # resource_classes = [TownResource]
 
 
 class ParcelOwnerResource(resources.ModelResource):
@@ -72,13 +72,13 @@ class ParcelOwnerResource(resources.ModelResource):
         model = ParcelOwner
 
 
-class ParcelOwnerAdmin(admin.ModelAdmin, ImportExportModelAdmin):
+class ParcelOwnerAdmin(admin.ModelAdmin):
     list_display = ('firstname', 'email', 'notes', 'created', 'updated')
     search_fields = ('code', 'firstname', 'surname', 'othernames', 'email', 'country',
                      'region', 'district', 'town', 'telephone1', 'telephone2',
                      'addressline1', 'addressline2', 'created', 'updated')
 
-    resource_classes = [ParcelOwnerResource]
+    # resource_classes = [ParcelOwnerResource]
 
 
 class ParcelResource(resources.ModelResource):
@@ -86,12 +86,12 @@ class ParcelResource(resources.ModelResource):
         model = Parcel
 
 
-class ParcelAdmin(LeafletGeoAdmin, ImportExportModelAdmin):
+class ParcelAdmin(LeafletGeoAdmin):
     list_display = ('owner', 'code', 'parcelCRS', 'parcelboundaryDEFAULT', 'parcelboundaryWGS84',
                     'notes', 'created', 'updated')
     search_fields = ('code', 'created', 'updated')
 
-    resource_classes = [ParcelResource]
+    # resource_classes = [ParcelResource]
 
 
 admin.site.register(CoordinateSystem, CoordinateSystemAdmin)
