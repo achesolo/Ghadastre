@@ -1,5 +1,6 @@
 from django.contrib import admin
 from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 from .models import Country, CoordinateSystem, Region, District, Town, ParcelOwner, Parcel
 from leaflet.admin import LeafletGeoAdmin
 
@@ -15,14 +16,15 @@ class CoordinateSystemResource(resources.ModelResource):
         model = CoordinateSystem
 
 
-class CountryAdmin(LeafletGeoAdmin):
-    list_display = ('name', 'code', 'notes', 'created', 'updated')
-    search_fields = ('name', 'code', 'notes', 'created', 'updated')
-
-
 class CountryResource(resources.ModelResource):
     class Meta:
         model = Country
+
+
+class CountryAdmin(LeafletGeoAdmin, ImportExportModelAdmin):
+    list_display = ('name', 'code', 'notes', 'created', 'updated')
+    search_fields = ('name', 'code', 'notes', 'created', 'updated')
+    resource_classes = [CountryResource]
 
 
 class RegionAdmin(LeafletGeoAdmin):
