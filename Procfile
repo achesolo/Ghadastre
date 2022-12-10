@@ -1,1 +1,1 @@
-web: gunicorn PARCELMANAGER.PARCELMANAGER.wsgi
+web: gunicorn PARCELMANAGER.wsgi
