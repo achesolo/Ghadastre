@@ -420,7 +420,7 @@
 
     function search_parcel_general() {
       var search_term = document.getElementById('search').value;
-      var url = "searchparcelgeneral/" + String(search_term);
+      var url = "/searchparcelgeneral/" + String(search_term);
 
       fetch(url, {
           method: "GET",
@@ -445,7 +445,7 @@
         var el = document.getElementById('el').value;
         var nl = document.getElementById('nl').value;
         var srid = document.getElementById('coordinatesystems').value;
-        var url = "searchparcelbypoint/" + String(el) + "/" + String(nl) + "/" + String(srid);
+        var url = "/searchparcelbypoint/" + String(el) + "/" + String(nl) + "/" + String(srid);
 
         fetch(url, {
         method: "GET",
@@ -481,7 +481,7 @@
         };
 
         var srid = document.getElementById('coordinatesystems2').value;
-        var url = "searchparcelbyfeaturetype/" + feature + "/" + String(srid);
+        var url = "/searchparcelbyfeaturetype/" + feature + "/" + String(srid);
 
         fetch(url, {
         method: "GET",
