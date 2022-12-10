@@ -36,11 +36,11 @@ class RegionResource(resources.ModelResource):
         model = Region
 
 
-class RegionAdmin(LeafletGeoAdmin):
+class RegionAdmin(LeafletGeoAdmin, ImportExportModelAdmin):
     list_display = ('name', 'code', 'notes', 'created', 'updated')
     search_fields = ('name', 'code', 'notes', 'created', 'updated')
 
-    # resource_classes = [RegionResource]
+    resource_classes = [RegionResource]
 
 
 class DistrictResource(resources.ModelResource):
