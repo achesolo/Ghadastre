@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Country,  \
+from .models import Country, \
     CoordinateSystem, Region, District, Town, ParcelOwner, Parcel
 from leaflet.admin import LeafletGeoAdmin
 

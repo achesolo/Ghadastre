@@ -29,11 +29,11 @@ class Country(models.Model):
     code = models.CharField(max_length=100, unique=True, verbose_name="UNIQUE CODE")
     name = models.CharField(max_length=250, unique=True, verbose_name="NAME")
     countryboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_countries",
-                                     on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     countryboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                       verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                              verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     countryboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
-                                              verbose_name="BOUNDARY MAP VIEW")  # WGS 84
+                                               verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
     perimeter = models.DecimalField(blank=True, null=True, verbose_name="PERIMETER", max_digits=50, decimal_places=9)
     center = models.CharField(blank=True, null=True, verbose_name="CENTER", max_length=1000)
@@ -68,9 +68,9 @@ class Country(models.Model):
                     # Checking if the region geometry does not overlap with or
                     # is covers any other region geometry.
                     conflicting_countries = Country.objects.filter(countryboundaryWGS84__covers=geometryWGS84) | \
-                                          Country.objects.filter(countryboundaryWGS84__overlaps=geometryWGS84) | \
-                                          Country.objects.filter(countryboundaryWGS84__within=geometryWGS84) | \
-                                          Country.objects.filter(countryboundaryWGS84__equals=geometryWGS84)
+                                            Country.objects.filter(countryboundaryWGS84__overlaps=geometryWGS84) | \
+                                            Country.objects.filter(countryboundaryWGS84__within=geometryWGS84) | \
+                                            Country.objects.filter(countryboundaryWGS84__equals=geometryWGS84)
 
                     conflicting_countries = list(conflicting_countries)
                     if self in conflicting_countries:
@@ -82,7 +82,7 @@ class Country(models.Model):
                             conflicting_countries_str += "{" + country.code + ">>" + country.name + "}, "
 
                         error = {'countryboundaryDEFAULT': _("Country boundary conflicts with the boundary of << "
-                                                     ""+ conflicting_countries_str + " >>")}
+                                                             ""+ conflicting_countries_str + " >>")}
                         raise ValidationError(error)
 
             else:
@@ -97,8 +97,8 @@ class Country(models.Model):
             self.countryboundaryDEFAULT = str(self.countryboundaryDEFAULT).replace("\n", "")
 
             countryboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.countryboundaryCRS.srid,
-                                           geo_input=self.countryboundaryDEFAULT)
-            self.countryboundaryDEFAULT = countryboundaryDEFAULT.wkt
+                                                          geo_input=self.countryboundaryDEFAULT)
+            self.countryboundaryDEFAULT = countryboundaryDEFAULTGEOMETRY.wkt
 
             self.countryboundaryWGS84 = countryboundaryDEFAULTGEOMETRY.transform(
                 4326, countryboundaryDEFAULTGEOMETRY)
@@ -127,11 +127,11 @@ class Region(models.Model):
     country = models.ForeignKey(Country, related_name="country_regions",
                                 on_delete=models.CASCADE, verbose_name="COUNTRY")
     regionboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_regions",
-                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                          on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     regionboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                      verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                             verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     regionboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
-                                             verbose_name="BOUNDARY MAP VIEW")  # WGS 84
+                                              verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
     perimeter = models.DecimalField(blank=True, null=True, verbose_name="PERIMETER", max_digits=50, decimal_places=9)
     center = models.CharField(blank=True, null=True, verbose_name="CENTER", max_length=1000)
@@ -167,7 +167,7 @@ class Region(models.Model):
                         # Checking if the region geometry is within the country geometry
                         if not self.country.countryboundaryWGS84.covers(geometryWGS84):
                             error = {'regionboundaryDEFAULT': _("Region boundary is not within the boundary "
-                                                         "of the selected Country!")}
+                                                                "of the selected Country!")}
                             raise ValidationError(error)
 
                         else:
@@ -175,12 +175,12 @@ class Region(models.Model):
                             # is covers any other region geometry.
                             conflicting_regions = Region.objects.filter(
                                 country=self.country, regionboundaryWGS84__covers=geometryWGS84) | \
-                                Region.objects.filter(country=self.country,
-                                                      regionboundaryWGS84__overlaps=geometryWGS84) | \
-                                Region.objects.filter(country=self.country,
-                                                      regionboundaryWGS84__within=geometryWGS84) | \
-                                Region.objects.filter(country=self.country,
-                                                      regionboundaryWGS84__equals=geometryWGS84)
+                                                  Region.objects.filter(country=self.country,
+                                                                        regionboundaryWGS84__overlaps=geometryWGS84) | \
+                                                  Region.objects.filter(country=self.country,
+                                                                        regionboundaryWGS84__within=geometryWGS84) | \
+                                                  Region.objects.filter(country=self.country,
+                                                                        regionboundaryWGS84__equals=geometryWGS84)
 
                             conflicting_regions = list(conflicting_regions)
                             if self in conflicting_regions:
@@ -192,12 +192,12 @@ class Region(models.Model):
                                     conflicting_regions_str += "{" + region.code + ">>" + region.name + "}, "
 
                                 error = {'regionboundaryDEFAULT': _("Region boundary conflicts with boundary << "
-                                                             ""+ conflicting_regions_str + " >>")}
+                                                                    ""+ conflicting_regions_str + " >>")}
                                 raise ValidationError(error)
 
                     else:
                         error = {'regionboundaryDEFAULT': _("Clear Field! Region cannot have any boundary "
-                                                     "since Country has no boundary.")}
+                                                            "since Country has no boundary.")}
                         raise ValidationError(error)
 
             else:
@@ -212,8 +212,8 @@ class Region(models.Model):
             self.regionboundaryDEFAULT = str(self.regionboundaryDEFAULT).replace("\n", "")
 
             regionboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.regionboundaryCRS.srid,
-                                                          geo_input=self.regionboundaryDEFAULT)
-            self.regionboundaryDEFAULT = regionboundaryDEFAULT.wkt
+                                                         geo_input=self.regionboundaryDEFAULT)
+            self.regionboundaryDEFAULT = regionboundaryDEFAULTGEOMETRY.wkt
 
             self.regionboundaryWGS84 = regionboundaryDEFAULTGEOMETRY.transform(
                 4326, regionboundaryDEFAULTGEOMETRY)
@@ -242,11 +242,11 @@ class District(models.Model):
     region = models.ForeignKey(Region, related_name="region_districts",
                                on_delete=models.CASCADE)
     districtboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_districts",
-                                     on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                            on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     districtboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                      verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                               verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     districtboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
-                                             verbose_name="BOUNDARY MAP VIEW")  # WGS 84
+                                                verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
     perimeter = models.DecimalField(blank=True, null=True, verbose_name="PERIMETER", max_digits=50, decimal_places=9)
     center = models.CharField(blank=True, null=True, verbose_name="CENTER", max_length=1000)
@@ -282,7 +282,7 @@ class District(models.Model):
                         # Checking if the district geometry is within the region geometry
                         if not self.region.regionboundaryWGS84.covers(geometryWGS84):
                             error = {'districtboundaryDEFAULT': _("District boundary is not within the boundary "
-                                                         "of the selected Region!")}
+                                                                  "of the selected Region!")}
                             raise ValidationError(error)
 
                         else:
@@ -290,12 +290,12 @@ class District(models.Model):
                             # is covers any other region geometry.
                             conflicting_districts = District.objects.filter(
                                 region=self.region, districtboundaryWGS84__covers=geometryWGS84) | \
-                                                  District.objects.filter(region=self.region,
-                                                                        districtboundaryWGS84__overlaps=geometryWGS84) | \
-                                                  District.objects.filter(region=self.region,
-                                                                        districtboundaryWGS84__within=geometryWGS84) | \
-                                                  District.objects.filter(region=self.region,
-                                                                        districtboundaryWGS84__equals=geometryWGS84)
+                                                    District.objects.filter(region=self.region,
+                                                                            districtboundaryWGS84__overlaps=geometryWGS84) | \
+                                                    District.objects.filter(region=self.region,
+                                                                            districtboundaryWGS84__within=geometryWGS84) | \
+                                                    District.objects.filter(region=self.region,
+                                                                            districtboundaryWGS84__equals=geometryWGS84)
 
                             conflicting_districts = list(conflicting_districts)
                             if self in conflicting_districts:
@@ -307,12 +307,12 @@ class District(models.Model):
                                     conflicting_districts_str += "{" + district.code + ">>" + district.name + "}, "
 
                                 error = {'districtboundaryDEFAULT': _("District boundary conflicts with boundary << "
-                                                             ""+ conflicting_regions_str + " >>")}
+                                                                      ""+ conflicting_districts_str + " >>")}
                                 raise ValidationError(error)
 
                     else:
                         error = {'districtboundaryDEFAULT': _("Clear Field! District cannot have any boundary "
-                                                     "since Region has no boundary.")}
+                                                              "since Region has no boundary.")}
                         raise ValidationError(error)
 
             else:
@@ -327,10 +327,10 @@ class District(models.Model):
             self.districtboundaryDEFAULT = str(self.districtboundaryDEFAULT).replace("\n", "")
 
             districtboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.districtboundaryCRS.srid,
-                                                          geo_input=self.districtboundaryDEFAULT)
-            self.districtboundaryDEFAULT = districtboundaryDEFAULT.wkt
+                                                           geo_input=self.districtboundaryDEFAULT)
+            self.districtboundaryDEFAULT = districtboundaryDEFAULTGEOMETRY.wkt
 
-            self.districtboundaryWGS84 = countryboundaryDEFAULTGEOMETRY.transform(
+            self.districtboundaryWGS84 = districtboundaryDEFAULTGEOMETRY.transform(
                 4326, districtboundaryDEFAULTGEOMETRY)
 
             self.area = districtboundaryDEFAULTGEOMETRY.area
@@ -357,11 +357,11 @@ class Town(models.Model):
     district = models.ForeignKey(District, related_name="district_towns",
                                  on_delete=models.CASCADE)
     townboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_towns",
-                                    on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                        on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     townboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                        verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                           verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     townboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
-                                               verbose_name="BOUNDARY MAP VIEW")  # WGS 84
+                                            verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
     perimeter = models.DecimalField(blank=True, null=True, verbose_name="PERIMETER", max_digits=50, decimal_places=9)
     center = models.CharField(blank=True, null=True, verbose_name="CENTER", max_length=1000)
@@ -397,7 +397,7 @@ class Town(models.Model):
                         # Checking if the town geometry is within the district geometry
                         if not self.district.districtboundaryWGS84.covers(geometryWGS84):
                             error = {'townboundaryDEFAULT': _("Town boundary is not within the boundary "
-                                                           "of the selected District!")}
+                                                              "of the selected District!")}
                             raise ValidationError(error)
 
                         else:
@@ -405,12 +405,12 @@ class Town(models.Model):
                             # is covers any other region geometry.
                             conflicting_towns = Town.objects.filter(
                                 district=self.district, townboundaryWGS84__covers=geometryWGS84) | \
-                                                    Town.objects.filter(district=self.district,
-                                                                            townboundaryWGS84__overlaps=geometryWGS84) | \
-                                                    Town.objects.filter(district=self.district,
-                                                                            townboundaryWGS84__within=geometryWGS84) | \
-                                                    Town.objects.filter(district=self.district,
-                                                                            townboundaryWGS84__equals=geometryWGS84)
+                                                Town.objects.filter(district=self.district,
+                                                                    townboundaryWGS84__overlaps=geometryWGS84) | \
+                                                Town.objects.filter(district=self.district,
+                                                                    townboundaryWGS84__within=geometryWGS84) | \
+                                                Town.objects.filter(district=self.district,
+                                                                    townboundaryWGS84__equals=geometryWGS84)
 
                             conflicting_towns = list(conflicting_towns)
                             if self in conflicting_towns:
@@ -422,12 +422,12 @@ class Town(models.Model):
                                     conflicting_towns_str += "{" + town.code + ">>" + town.name + "}, "
 
                                 error = {'townboundaryDEFAULT': _("Town boundary conflicts with boundary << "
-                                                               ""+ conflicting_towns_str + " >>")}
+                                                                  ""+ conflicting_towns_str + " >>")}
                                 raise ValidationError(error)
 
                     else:
                         error = {'townboundaryDEFAULT': _("Clear Field! Town cannot have any boundary "
-                                                       "since District has no boundary.")}
+                                                          "since District has no boundary.")}
                         raise ValidationError(error)
 
             else:
@@ -443,8 +443,8 @@ class Town(models.Model):
             self.townboundaryDEFAULT = str(self.townboundaryDEFAULT).replace("\n", "")
 
             townboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.townboundaryCRS.srid,
-                                                           geo_input=self.townboundaryDEFAULT)
-            self.townboundaryDEFAULT = townboundaryDEFAULT.wkt
+                                                       geo_input=self.townboundaryDEFAULT)
+            self.townboundaryDEFAULT = townboundaryDEFAULTGEOMETRY.wkt
 
             self.townboundaryWGS84 = townboundaryDEFAULTGEOMETRY.transform(
                 4326, townboundaryDEFAULTGEOMETRY)
@@ -501,17 +501,17 @@ class Parcel(models.Model):
                               on_delete=models.CASCADE, blank=False)
     town = models.ForeignKey(Town, related_name="town_parcels", on_delete=models.CASCADE)
     parcelCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_parcels",
-                                     on_delete=models.CASCADE)
+                                  on_delete=models.CASCADE)
     parcelboundaryDEFAULT = models.TextField(blank=False,
-                                    verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                             verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
     parcelreferenceDEFAULT = models.TextField(blank=True, null=True,
-                                      verbose_name="REFERENCES MULTIPOINT DATA(<<{WKT}FORMAT>>)")
+                                              verbose_name="REFERENCES MULTIPOINT DATA(<<{WKT}FORMAT>>)")
     parcelboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326, editable=False,
-                                             verbose_name="PARCEL POLYGON WGS84")  # WGS 84
+                                              verbose_name="PARCEL POLYGON WGS84")  # WGS 84
     parcelreferenceWGS84 = models.MultiPointField(blank=True, null=True, srid=4326, editable=False,
-                                         verbose_name="PARCEL REFERENCE POINT WGS84")  # WGS 84
+                                                  verbose_name="PARCEL REFERENCE POINT WGS84")  # WGS 84
     parcelgeometry = models.GeometryCollectionField(blank=True, null=True, srid=4326,
-                                         verbose_name="PARCEL GEOMETRY MAP VIEW")  # WGS 84
+                                                    verbose_name="PARCEL GEOMETRY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
     perimeter = models.DecimalField(blank=True, null=True, verbose_name="PERIMETER", max_digits=50, decimal_places=9)
     center = models.CharField(blank=True, null=True, verbose_name="CENTER", max_length=1000)
@@ -548,7 +548,7 @@ class Parcel(models.Model):
                         # Checking if the town geometry is within the district geometry
                         if not self.town.townboundaryWGS84.covers(boundary_geometryWGS84):
                             error = {'parcelboundaryDEFAULT': _("Parcel boundary is not within the boundary "
-                                                       "of the selected Town!")}
+                                                                "of the selected Town!")}
                             raise ValidationError(error)
 
 
@@ -556,12 +556,12 @@ class Parcel(models.Model):
                     # is covers any other region geometry.
                     conflicting_parcels = Parcel.objects.filter(
                         town=self.town, parcelboundaryWGS84__covers=boundary_geometryWGS84) | \
-                        Parcel.objects.filter(
-                            town=self.town, parcelboundaryWGS84__overlaps=boundary_geometryWGS84) | \
-                        Parcel.objects.filter(
-                            town=self.town, parcelboundaryWGS84__within=boundary_geometryWGS84) | \
-                        Parcel.objects.filter(
-                            town=self.town, parcelboundaryWGS84__equals=boundary_geometryWGS84)
+                                          Parcel.objects.filter(
+                                              town=self.town, parcelboundaryWGS84__overlaps=boundary_geometryWGS84) | \
+                                          Parcel.objects.filter(
+                                              town=self.town, parcelboundaryWGS84__within=boundary_geometryWGS84) | \
+                                          Parcel.objects.filter(
+                                              town=self.town, parcelboundaryWGS84__equals=boundary_geometryWGS84)
 
                     conflicting_parcels = list(conflicting_parcels)
                     if self in conflicting_parcels:
@@ -571,10 +571,10 @@ class Parcel(models.Model):
                         conflicting_towns_str = ""
                         for parcel in conflicting_parcels:
                             conflicting_towns_str += "{" + parcel.code + " >>" + parcel.owner.firstname + \
-                                    " " +  parcel.owner.surname + " " + parcel.owner.othernames + "}, "
+                                                     " " +  parcel.owner.surname + " " + parcel.owner.othernames + "}, "
 
                             error = {'parcelboundaryDEFAULT': _("Parcel boundary conflicts with the boundary of "
-                                                             "Parcel << " + conflicting_towns_str + " >>")}
+                                                                "Parcel << " + conflicting_towns_str + " >>")}
                             raise ValidationError(error)
 
             else:
@@ -587,7 +587,7 @@ class Parcel(models.Model):
 
             try:
                 reference_geometry = GEOSGeometry(srid=self.parcelCRS.srid,
-                                                 geo_input=self.parcelreferenceDEFAULT)
+                                                  geo_input=self.parcelreferenceDEFAULT)
 
             except:
                 error = {'parcelreferenceDEFAULT': _("Incorrect format!. Format must be WKT or GEOJSON")}
@@ -612,7 +612,7 @@ class Parcel(models.Model):
             self.parcelboundaryDEFAULT = str(self.parcelboundaryDEFAULT).replace("\n", "")
 
             parcelboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.parcelCRS.srid,
-                                                       geo_input=self.parcelboundaryDEFAULT)
+                                                         geo_input=self.parcelboundaryDEFAULT)
             self.parcelboundaryDEFAULT = parcelboundaryDEFAULTGEOMETRY.wkt
             self.parcelboundaryWGS84 = parcelboundaryDEFAULTGEOMETRY.transform(
                 4326, parcelboundaryDEFAULTGEOMETRY)
@@ -621,7 +621,7 @@ class Parcel(models.Model):
                 self.parcelreferenceDEFAULT = str(self.parcelreferenceDEFAULT).replace("\n", "")
 
                 parcelreferenceDEFAULTGEOMETRY = GEOSGeometry(srid=self.parcelCRS.srid,
-                                                             geo_input=self.parcelreferenceDEFAULT)
+                                                              geo_input=self.parcelreferenceDEFAULT)
                 self.parcelreferenceDEFAULT = parcelreferenceDEFAULTGEOMETRY.wkt
                 self.parcelreferenceWGS84 = parcelreferenceDEFAULTGEOMETRY.transform(
                     4326, parcelreferenceDEFAULTGEOMETRY)
