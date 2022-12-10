@@ -42,6 +42,7 @@ ALLOWED_HOSTS = ['ghadastre.herokuapp.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    'whitenoise',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
