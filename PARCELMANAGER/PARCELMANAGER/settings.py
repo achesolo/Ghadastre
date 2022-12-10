@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'leaflet',
     'parcels',
     'account',
+    'gunicorn'
 ]
 
 MIDDLEWARE = [
