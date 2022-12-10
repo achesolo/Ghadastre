@@ -12,11 +12,11 @@ class CoordinateSystemResource(resources.ModelResource):
         model = CoordinateSystem
 
 
-class CoordinateSystemAdmin(admin.ModelAdmin):
+class CoordinateSystemAdmin(admin.ModelAdmin, ImportExportModelAdmin):
     list_display = ('name', 'code', 'srid', 'unitname', 'created', 'updated')
     search_fields = ('name', 'code', 'srid', 'unitname', 'created', 'updated')
 
-    # resource_classes = [CoordinateSystemResource]
+    resource_classes = [CoordinateSystemResource]
 
 
 class CountryResource(resources.ModelResource):
