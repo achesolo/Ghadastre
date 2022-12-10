@@ -116,7 +116,7 @@ def edit_name_view(request):
                 # Logging in the user
                 login(request, user)
 
-                return redirect("account_settings")
+                return redirect("accountsettings")
 
         else:
             form = EditNameForm(request.POST)
@@ -138,7 +138,7 @@ def edit_username_view(request):
                     user.username = user_username
                     user.save()
 
-                    return redirect("account_settings")
+                    return redirect("accountsettings")
 
             else:
                 # Checking if the username exists
@@ -151,7 +151,7 @@ def edit_username_view(request):
                         # Logging in the user
                         login(request, user)
 
-                        return redirect("account_settings")
+                        return redirect("accountsettings")
 
                 else:
                     return HttpResponse("Username already exists")
@@ -178,7 +178,7 @@ def edit_email_view(request):
                 # Logging in the user
                 login(request, user)
 
-                return redirect("account_settings")
+                return redirect("accountsettings")
 
         else:
             form = EditEmailForm(request.POST)
@@ -207,7 +207,7 @@ def edit_password_view(request):
                     # Logging in the user after saving the password
                     login(request, user)
 
-                    return redirect("account_settings")
+                    return redirect("accountsettings")
 
             else:
                 form = EditPasswordForm(request.POST)
