@@ -180,7 +180,7 @@
                             {% if coordinatesystems %}
                             {% for coordinatesystem in coordinatesystems %}
                             <option value="{{ coordinatesystem.srid }}" id="{{ coordinatesystem.id }}">
-                                {{ coordinatesystem.name }} [unit: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | ESPG CODE: {{ coordinatesystem.srid }}]
+                                {{ coordinatesystem.name }} [unit: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | EPSG CODE: {{ coordinatesystem.srid }}]
                             </option>
                             {% endfor %}
                             {% endif %}
@@ -226,7 +226,7 @@
                             {% if coordinatesystems %}
                             {% for coordinatesystem in coordinatesystems %}
                             <option value="{{ coordinatesystem.srid }}" id="{{ coordinatesystem.id }}_2">
-                                {{ coordinatesystem.name }} [unit: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | ESPG CODE: {{ coordinatesystem.srid }}]
+                                {{ coordinatesystem.name }} [unit: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | EPSG CODE: {{ coordinatesystem.srid }}]
                             </option>
                             {% endfor %}
                             {% endif %}
