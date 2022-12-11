@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-99az87i9c#8q*foxx)uhvaj^5ksgxs_ay%y+n9=+08b!6_bsfy
 DEBUG = False
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['ghadastre.herokuapp.com']
+ALLOWED_HOSTS = ['ghadastre.herokuapp.com', 'www.ghadastre.com']
 # ALLOWED_HOSTS = ['*']
 
 
