@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-{% load static %}
+ {% load static %}
 <head>
     <style type="text/css">
     .brass {
@@ -269,7 +269,7 @@
 <script type="text/javascript">
     var attribute = 'EFKINITOS GROUP @ DEPARTMENT OF GEOMATIC ENGINEERING, KNUST';
     var zoom = 6;
-    var maxzoom = 50;
+    var maxzoom = 20;
     var center = [7.023, 1.87];
 
     var map = L.map('map', {
@@ -284,8 +284,21 @@
     map.attributionControl.setPrefix("");
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: attribute + ' &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+        attribution: attribute + ' &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxNativeZoom: 20,
+        maxZoom: 20,
+     }).addTo(map);
+
+
+     // PARCELS APPEARANCE
+     //
+
+     var SELECTED_PARCEL_OUTLINE_COLOR;
+     var SELECTED_PARCEL_OUTLINE_WIDTH;
+     var SELECTED_PARCEL_FILL_COLOR;
+     var SELECTED_PARCEL_FILL_COLOR_OPACITY;
+
+     create_parcel_settings();
 
 
     // Below is the format of the coordinates data
@@ -414,9 +427,11 @@
     };
 
     var parcel_polygon = L.polygon(default_corner_coordinates.coordinates, {
-            color: 'red',
-            fillOpacity: 0.1,
-         }).addTo(map);
+          color: SELECTED_PARCEL_OUTLINE_COLOR,
+          fillOpacity: SELECTED_PARCEL_FILL_COLOR_OPACITY,
+          fillColor: SELECTED_PARCEL_FILL_COLOR,
+          weight: SELECTED_PARCEL_OUTLINE_WIDTH,
+    }).addTo(map);
 
     map_data.push(parcel_polygon);
 
@@ -441,7 +456,7 @@
     // and getting their bounds or extent or bounding box for fitting all the
     // items on the map
     var map_items = L.featureGroup(map_data);
-    map.fitBounds(map_items.getBounds());
+    map.fitBounds(map_items.getBounds(), {padding:[50, 50]});
 
 
     function convert_multipoint_from_wkt(wkt){
@@ -483,6 +498,31 @@
                 };
 
             return cleaned;
+    };
+
+
+    function create_parcel_settings(){
+<!--        localStorage.clear();-->
+        var settings;
+
+        if (localStorage.getItem("PARCELS_SETTINGS") == null){
+
+            SELECTED_PARCEL_OUTLINE_COLOR = "#070FF2";
+            SELECTED_PARCEL_OUTLINE_WIDTH = 2;
+            SELECTED_PARCEL_FILL_COLOR = "#070FF2";
+            SELECTED_PARCEL_FILL_COLOR_OPACITY = "0";
+
+        }else{
+            settings = JSON.parse(localStorage.getItem("PARCELS_SETTINGS"));
+
+
+        };
+
+        SELECTED_PARCEL_OUTLINE_COLOR = settings.SELECTED_PARCEL_OUTLINE_COLOR;
+        SELECTED_PARCEL_OUTLINE_WIDTH = settings.SELECTED_PARCEL_OUTLINE_WIDTH * 1;
+        SELECTED_PARCEL_FILL_COLOR = settings.SELECTED_PARCEL_FILL_COLOR;
+        SELECTED_PARCEL_FILL_COLOR_OPACITY = parseInt(settings.SELECTED_PARCEL_FILL_COLOR_OPACITY * 100);
+
     };
   </script>
 </body>
