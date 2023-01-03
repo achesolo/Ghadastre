@@ -5,6 +5,12 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
+polygon_info = "POLYGON((east_lon1 north_lat1, east_lon2 north_lat2, ...east_lonN north_latN, " \
+               "east_lon1 north_lat1))>>)"
+
+multipoint_info = "MULTIPOINT(east_lon1 north_lat1, east_lon2 north_lat2, ...east_lonN north_latN)"
+
+
 # Create your models here.
 class CoordinateSystem(models.Model):
     code = models.CharField(max_length=100, unique=True, verbose_name="UNIQUE CODE")
@@ -29,10 +35,10 @@ class Country(models.Model):
     code = models.CharField(max_length=100, unique=True, verbose_name="UNIQUE CODE")
     name = models.CharField(max_length=250, unique=True, verbose_name="NAME")
     countryboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_countries",
-                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                           blank=True, null=True)
+                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     countryboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                              verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                              verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
+                                                           polygon_info + ">>]")
     countryboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
                                                verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
@@ -46,7 +52,8 @@ class Country(models.Model):
 
     def clean(self):
         if self.countryboundaryDEFAULT:
-            self.countryboundaryDEFAULT = str(self.countryboundaryDEFAULT).replace("\n", "")
+            self.countryboundaryDEFAULT = str(self.countryboundaryDEFAULT
+                                              ).replace("\r", "").replace("\n", "")
             try:
                 geometry = GEOSGeometry(srid=self.countryboundaryCRS.srid,
                                         geo_input=self.countryboundaryDEFAULT)
@@ -74,6 +81,7 @@ class Country(models.Model):
                                             Country.objects.filter(countryboundaryWGS84__equals=geometryWGS84)
 
                     conflicting_countries = list(conflicting_countries)
+
                     if self in conflicting_countries:
                         conflicting_countries.remove(self)
 
@@ -83,7 +91,7 @@ class Country(models.Model):
                             conflicting_countries_str += "{" + country.code + ">>" + country.name + "}, "
 
                         error = {'countryboundaryDEFAULT': _("Country boundary conflicts with the boundary of << "
-                                                             ""+ conflicting_countries_str + " >>")}
+                                                             "" + conflicting_countries_str + " >>")}
                         raise ValidationError(error)
 
             else:
@@ -95,7 +103,8 @@ class Country(models.Model):
 
     def save(self, *args, **kwargs):
         if self.countryboundaryDEFAULT:
-            self.countryboundaryDEFAULT = str(self.countryboundaryDEFAULT).replace("\n", "")
+            self.countryboundaryDEFAULT = str(self.countryboundaryDEFAULT
+                                              ).replace("\r", "").replace("\n", "")
 
             countryboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.countryboundaryCRS.srid,
                                                           geo_input=self.countryboundaryDEFAULT)
@@ -128,10 +137,10 @@ class Region(models.Model):
     country = models.ForeignKey(Country, related_name="country_regions",
                                 on_delete=models.CASCADE, verbose_name="COUNTRY")
     regionboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_regions",
-                                          on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                          blank=True, null=True)
+                                          on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     regionboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                             verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                             verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
+                                                          polygon_info + ">>]")
     regionboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
                                               verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
@@ -144,7 +153,8 @@ class Region(models.Model):
 
     def clean(self):
         if self.regionboundaryDEFAULT:
-            self.regionboundaryDEFAULT = str(self.regionboundaryDEFAULT).replace("\n", "")
+            self.regionboundaryDEFAULT = str(self.regionboundaryDEFAULT
+                                             ).replace("\r", "").replace("\n", "")
 
             try:
                 geometry = GEOSGeometry(srid=self.regionboundaryCRS.srid,
@@ -211,7 +221,8 @@ class Region(models.Model):
 
     def save(self, *args, **kwargs):
         if self.regionboundaryDEFAULT:
-            self.regionboundaryDEFAULT = str(self.regionboundaryDEFAULT).replace("\n", "")
+            self.regionboundaryDEFAULT = str(self.regionboundaryDEFAULT
+                                             ).replace("\r", "").replace("\n", "")
 
             regionboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.regionboundaryCRS.srid,
                                                          geo_input=self.regionboundaryDEFAULT)
@@ -244,10 +255,10 @@ class District(models.Model):
     region = models.ForeignKey(Region, related_name="region_districts",
                                on_delete=models.CASCADE)
     districtboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_districts",
-                                            on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                            blank=True, null=True)
+                                            on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     districtboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                               verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                               verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
+                                                            polygon_info + ">>]")
     districtboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
                                                 verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
@@ -260,7 +271,8 @@ class District(models.Model):
 
     def clean(self):
         if self.districtboundaryDEFAULT:
-            self.districtboundaryDEFAULT = str(self.districtboundaryDEFAULT).replace("\n", "")
+            self.districtboundaryDEFAULT = str(self.districtboundaryDEFAULT
+                                               ).replace("\r", "").replace("\n", "")
 
             try:
                 geometry = GEOSGeometry(srid=self.districtboundaryCRS.srid,
@@ -327,7 +339,8 @@ class District(models.Model):
 
     def save(self, *args, **kwargs):
         if self.districtboundaryDEFAULT:
-            self.districtboundaryDEFAULT = str(self.districtboundaryDEFAULT).replace("\n", "")
+            self.districtboundaryDEFAULT = str(self.districtboundaryDEFAULT
+                                               ).replace("\r", "").replace("\n", "")
 
             districtboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.districtboundaryCRS.srid,
                                                            geo_input=self.districtboundaryDEFAULT)
@@ -360,10 +373,10 @@ class Town(models.Model):
     district = models.ForeignKey(District, related_name="district_towns",
                                  on_delete=models.CASCADE)
     townboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_towns",
-                                        on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
-                                        blank=True, null=True)
+                                        on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
     townboundaryDEFAULT = models.TextField(blank=True, null=True,
-                                           verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                           verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
+                                                        polygon_info + ">>]")
     townboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326,
                                             verbose_name="BOUNDARY MAP VIEW")  # WGS 84
     area = models.DecimalField(blank=True, null=True, verbose_name="AREA", max_digits=50, decimal_places=9)
@@ -376,7 +389,8 @@ class Town(models.Model):
 
     def clean(self):
         if self.townboundaryDEFAULT:
-            self.townboundaryDEFAULT = str(self.townboundaryDEFAULT).replace("\n", "")
+            self.townboundaryDEFAULT = str(self.townboundaryDEFAULT
+                                           ).replace("\r", "").replace("\n", "")
 
             try:
                 geometry = GEOSGeometry(srid=self.townboundaryCRS.srid,
@@ -444,7 +458,8 @@ class Town(models.Model):
 
     def save(self, *args, **kwargs):
         if self.townboundaryDEFAULT:
-            self.townboundaryDEFAULT = str(self.townboundaryDEFAULT).replace("\n", "")
+            self.townboundaryDEFAULT = str(self.townboundaryDEFAULT
+                                           ).replace("\r", "").replace("\n", "")
 
             townboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.townboundaryCRS.srid,
                                                        geo_input=self.townboundaryDEFAULT)
@@ -507,11 +522,15 @@ class Parcel(models.Model):
     parcelCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_parcels",
                                   on_delete=models.CASCADE)
     parcelboundaryDEFAULT = models.TextField(blank=False,
-                                             verbose_name="BOUNDARY POLYGON DATA(<<{WKT}FORMAT>>)")
+                                             verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
+                                                          polygon_info + ">>]")
     parcelreferenceDEFAULT = models.TextField(blank=True, null=True,
-                                              verbose_name="REFERENCES MULTIPOINT DATA(<<{WKT}FORMAT>>)")
+                                              verbose_name="REFERENCES MULTIPOINT DATA[<<{WKT}FORMAT => " +
+                                                           multipoint_info + ">>]")
     parcelboundaryWGS84 = models.PolygonField(blank=True, null=True, srid=4326, editable=False,
                                               verbose_name="PARCEL POLYGON WGS84")  # WGS 84
+    parcelboundarycenterWGS84 = models.PointField(blank=True, null=True, editable=False,
+                                                  verbose_name="PARCEL BOUNDARY CENTER WGS84")
     parcelreferenceWGS84 = models.MultiPointField(blank=True, null=True, srid=4326, editable=False,
                                                   verbose_name="PARCEL REFERENCE POINT WGS84")  # WGS 84
     parcelgeometry = models.GeometryCollectionField(blank=True, null=True, srid=4326,
@@ -527,7 +546,9 @@ class Parcel(models.Model):
 
     def clean(self):
         if self.parcelboundaryDEFAULT:
-            self.parcelboundaryDEFAULT = str(self.parcelboundaryDEFAULT).replace("\n", "")
+
+            self.parcelboundaryDEFAULT = str(self.parcelboundaryDEFAULT
+                                             ).replace("\r", "").replace("\n", "")
 
             try:
                 boundary_geometry = GEOSGeometry(srid=self.parcelCRS.srid,
@@ -555,7 +576,6 @@ class Parcel(models.Model):
                                                                 "of the selected Town!")}
                             raise ValidationError(error)
 
-
                     # Checking if the region geometry does not overlap with or
                     # is covers any other region geometry.
                     conflicting_parcels = Parcel.objects.filter(
@@ -568,18 +588,20 @@ class Parcel(models.Model):
                                               town=self.town, parcelboundaryWGS84__equals=boundary_geometryWGS84)
 
                     conflicting_parcels = list(conflicting_parcels)
+
                     if self in conflicting_parcels:
                         conflicting_parcels.remove(self)
 
                     if conflicting_parcels:
                         conflicting_towns_str = ""
-                        for parcel in conflicting_parcels:
-                            conflicting_towns_str += "{" + parcel.code + " >>" + parcel.owner.firstname + \
-                                                     " " +  parcel.owner.surname + " " + parcel.owner.othernames + "}, "
 
-                            error = {'parcelboundaryDEFAULT': _("Parcel boundary conflicts with the boundary of "
-                                                                "Parcel << " + conflicting_towns_str + " >>")}
-                            raise ValidationError(error)
+                        for parcel in conflicting_parcels:
+                            conflicting_towns_str += "{" + parcel.code + " -> " + parcel.owner.firstname + \
+                                                     " " + parcel.owner.surname + " " + parcel.owner.othernames + "}, "
+
+                        error = {'parcelboundaryDEFAULT': _("Parcel boundary conflicts with the boundary of "
+                                 "Parcel << " + conflicting_towns_str + " >>")}
+                        raise ValidationError(error)
 
             else:
                 error = {'parcelboundaryDEFAULT': _("Does not accept empty geometry!")}
@@ -587,7 +609,8 @@ class Parcel(models.Model):
 
         # Validating the parcel reference
         if self.parcelreferenceDEFAULT:
-            self.parcelreferenceDEFAULT = str(self.parcelreferenceDEFAULT).replace("\n", "")
+            self.parcelreferenceDEFAULT = str(self.parcelreferenceDEFAULT
+                                              ).replace("\r", "").replace("\n", "")
 
             try:
                 reference_geometry = GEOSGeometry(srid=self.parcelCRS.srid,
@@ -613,16 +636,20 @@ class Parcel(models.Model):
         # GEOMETRYCOLLECTION ( POINT(2 3), LINESTRING(2 3, 3 4))
 
         if self.parcelboundaryDEFAULT:
-            self.parcelboundaryDEFAULT = str(self.parcelboundaryDEFAULT).replace("\n", "")
+            self.parcelboundaryDEFAULT = str(self.parcelboundaryDEFAULT).replace("\r", ""
+                                                                                 ).replace("\n", "")
 
             parcelboundaryDEFAULTGEOMETRY = GEOSGeometry(srid=self.parcelCRS.srid,
                                                          geo_input=self.parcelboundaryDEFAULT)
             self.parcelboundaryDEFAULT = parcelboundaryDEFAULTGEOMETRY.wkt
             self.parcelboundaryWGS84 = parcelboundaryDEFAULTGEOMETRY.transform(
                 4326, parcelboundaryDEFAULTGEOMETRY)
+            # The center in WGS84 is for the algorithm for finding
+            self.parcelboundarycenterWGS84 = self.parcelboundaryWGS84.centroid
 
             if self.parcelreferenceDEFAULT:
-                self.parcelreferenceDEFAULT = str(self.parcelreferenceDEFAULT).replace("\n", "")
+                self.parcelreferenceDEFAULT = str(self.parcelreferenceDEFAULT
+                                                  ).replace("\r", "").replace("\n", "")
 
                 parcelreferenceDEFAULTGEOMETRY = GEOSGeometry(srid=self.parcelCRS.srid,
                                                               geo_input=self.parcelreferenceDEFAULT)

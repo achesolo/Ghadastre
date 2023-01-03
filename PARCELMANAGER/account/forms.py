@@ -29,3 +29,4 @@ class EditUsernameForm(forms.Form):
 class EditPasswordForm(forms.Form):
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
+

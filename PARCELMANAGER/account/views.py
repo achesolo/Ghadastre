@@ -1,8 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from .forms import SignInForm, SignUpForm, EditNameForm, EditEmailForm, EditPasswordForm, EditUsernameForm
 from django.contrib.auth.models import User
+# from .models import ParcelSetting
+import json
 
 # Create your views here.
 
@@ -116,7 +118,7 @@ def edit_name_view(request):
                 # Logging in the user
                 login(request, user)
 
-                return redirect("accountsettings")
+                return redirect("account_settings")
 
         else:
             form = EditNameForm(request.POST)
@@ -138,7 +140,7 @@ def edit_username_view(request):
                     user.username = user_username
                     user.save()
 
-                    return redirect("accountsettings")
+                    return redirect("account_settings")
 
             else:
                 # Checking if the username exists
@@ -151,7 +153,7 @@ def edit_username_view(request):
                         # Logging in the user
                         login(request, user)
 
-                        return redirect("accountsettings")
+                        return redirect("account_settings")
 
                 else:
                     return HttpResponse("Username already exists")
@@ -178,7 +180,7 @@ def edit_email_view(request):
                 # Logging in the user
                 login(request, user)
 
-                return redirect("accountsettings")
+                return redirect("account_settings")
 
         else:
             form = EditEmailForm(request.POST)
@@ -207,7 +209,7 @@ def edit_password_view(request):
                     # Logging in the user after saving the password
                     login(request, user)
 
-                    return redirect("accountsettings")
+                    return redirect("account_settings")
 
             else:
                 form = EditPasswordForm(request.POST)
@@ -221,3 +223,39 @@ def edit_password_view(request):
 
 def contributors_view(request):
     return render(request, "account/contributors.html")
+
+
+# def save_parcel_settings(request):
+#     user = request.user
+#     settings_data = json.load(request)
+#
+#     try:
+#         settings = ParcelSetting.objects.get(user=user)
+#
+#         settings.generalparceloutlinecolor = settings_data['generalparceloutlinecolor']
+#         settings.generalparceloutlinewidth = settings_data['generalparceloutlinewidth']
+#         settings.generalparcelfillcolor = settings_data['generalparcelfillcolor']
+#         settings.generalparcelfillcoloropacity = settings_data['generalparcelfillcoloropacity']
+#
+#         settings.selectedparceloutlinecolor = settings_data['selectedparceloutlinecolor']
+#         settings.selectedparceloutlinewidth = settings_data['selectedparceloutlinewidth']
+#         settings.selectedparcelfillcolor = settings_data['selectedparcelfillcolor']
+#         settings.selectedparcelfillcoloropacity = settings_data['selectedparcelfillcoloropacity']
+#
+#         settings.save()
+#
+#     except ParcelSetting.DoesNotExist:
+#         settings = ParcelSetting(
+#             user=user, generalparceloutlinecolor=settings_data['generalparceloutlinecolor'],
+#             generalparceloutlinewidth=settings_data['generalparceloutlinewidth'],
+#             generalparcelfillcolor=settings_data['generalparcelfillcolor'],
+#             generalparcelfillcoloropacity=settings_data['generalparcelfillcoloropacity'],
+#             selectedparceloutlinecolor=settings_data['selectedparceloutlinecolor'],
+#             selectedparceloutlinewidth=settings_data['selectedparceloutlinewidth'],
+#             selectedparcelfillcolor=settings_data['selectedparcelfillcolor'],
+#             selectedparcelfillcoloropacity=settings_data['selectedparcelfillcoloropacity']
+#         )
+#         settings.save()
+#
+#     return JsonResponse(settings_data, safe=False)
+
