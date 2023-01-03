@@ -147,7 +147,7 @@ def parceldetailview(request, code):
     except Parcel.DoesNotExist:
         parcel = parcel
 
-    return render(request, "parcels/parcel_detail.html", {'parcel': parcel})
+    return render(request, "parcels/parcel_detail1.html", {'parcel': parcel})
 
 
 def parcelownerdetailview(request, code):

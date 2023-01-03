@@ -28,12 +28,9 @@ if os.name == 'nt':
 SECRET_KEY = 'django-insecure-99az87i9c#8q*foxx)uhvaj^5ksgxs_ay%y+n9=+08b!6_bsfy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['ghadastre.herokuapp.com', 'www.ghadastre.com']
-# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -53,7 +50,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,6 +81,17 @@ WSGI_APPLICATION = 'PARCELMANAGER.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'NAME': '<DATABASE>',
+#         'USER': '<USER>',
+#         'PASSWORD': '<PASSWORD>',
+#         'HOST': '<HOST>',
+#         'PORT': '5432',
+#     }
+# }
 
 DATABASES = {
     'default': {
@@ -132,8 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_URL = 'static/'
 
 # Path where static is stored
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static/'), ]
@@ -144,8 +150,6 @@ MEDIA_URL = '/media/'
 
 # Path where media is stored
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 LEAFLET_CONFIG = {
@@ -160,8 +164,3 @@ LEAFLET_CONFIG = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-import django_on_heroku
-django_on_heroku.settings(locals())
-
-DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
