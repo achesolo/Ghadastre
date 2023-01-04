@@ -165,6 +165,7 @@
   {% endif %}
 
   <div class="fixed-action-btn fab1" style="width:50px; z-index: 9;">
+    {% if request.user.is_authenticated %}
     <a class="btn-floating black modal-trigger" onclick="create_parcel_settings()"
        data-target="settings_modal" style="margin: 10px;">
       <i class="large material-icons">settings</i>
@@ -173,10 +174,16 @@
     <a class="btn-floating black modal-trigger" data-target="transform_modal" style="margin: 10px;">
       <i class="large material-icons">transform</i>
     </a>
+    {% else %}
+    <br>
+    <a class="btn-floating black modal-trigger" data-target="transform_modal" style="margin: 10px;">
+      <i class="large material-icons">transform</i>
+    </a>
     <!--    <br>-->
     <!--    <a class="btn-floating  black modal-trigger" data-target="layers_modal" style="margin: 10px;">-->
     <!--      <i class="large material-icons">layers</i>-->
     <!--    </a>-->
+    {% endif %}
   </div>
 
   <div id="search_by_point_modal" class="modal modal-fixed-footer" style="width: 300px; height: 420px;">
