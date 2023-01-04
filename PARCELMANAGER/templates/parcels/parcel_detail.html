@@ -148,7 +148,8 @@
             </div>
             <div class="row">
                 <div class="col s12 m4 l5">
-                    <strong><em><p>WGS84 COORDINATE SYSTEM</p></em></strong>
+                    <strong><em><p>WGS84 GEOGRAPHIC [SRID/EPSG CODE: 4326]
+                    </p></em></strong>
                     <p class=" valign-wrapper">Corner Point Coordinates <i class="material-icons">location_on</i></p>
                     <div style="width: 100%; overflow: auto;">
                         <table id="default_table_corner">
@@ -194,7 +195,8 @@
                     </div>
                 </div>
                 <div class="col s12 m4 l5 right">
-                    <strong><em><p style="text-transform: uppercase;">{{ parcel.parcelCRS.name }}</p></em></strong>
+                    <strong><em><p style="text-transform: uppercase;">{{ parcel.parcelCRS.name }}
+                        [SRID/EPSG CODE: {{ parcel.parcelCRS.srid }}]</p></em></strong>
                     <p class=" valign-wrapper">Corner Point Coordinates <i class="material-icons">location_on</i></p>
                     <div style="width: 100%; overflow: auto;">
                         <table id="custom_table_corner">
