@@ -35,7 +35,8 @@ class Country(models.Model):
     code = models.CharField(max_length=100, unique=True, verbose_name="UNIQUE CODE")
     name = models.CharField(max_length=250, unique=True, verbose_name="NAME")
     countryboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_countries",
-                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                           on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
+                                           blank=True, null=True)
     countryboundaryDEFAULT = models.TextField(blank=True, null=True,
                                               verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
                                                            polygon_info + ">>]")
@@ -137,7 +138,8 @@ class Region(models.Model):
     country = models.ForeignKey(Country, related_name="country_regions",
                                 on_delete=models.CASCADE, verbose_name="COUNTRY")
     regionboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_regions",
-                                          on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                          on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
+                                          blank=True, null=True)
     regionboundaryDEFAULT = models.TextField(blank=True, null=True,
                                              verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
                                                           polygon_info + ">>]")
@@ -255,7 +257,8 @@ class District(models.Model):
     region = models.ForeignKey(Region, related_name="region_districts",
                                on_delete=models.CASCADE)
     districtboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_districts",
-                                            on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                            on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
+                                            blank=True, null=True)
     districtboundaryDEFAULT = models.TextField(blank=True, null=True,
                                                verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
                                                             polygon_info + ">>]")
@@ -373,7 +376,8 @@ class Town(models.Model):
     district = models.ForeignKey(District, related_name="district_towns",
                                  on_delete=models.CASCADE)
     townboundaryCRS = models.ForeignKey(CoordinateSystem, related_name="coordinatesystem_towns",
-                                        on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM")
+                                        on_delete=models.CASCADE, verbose_name="BOUNDARY COORDINATE SYSTEM",
+                                        blank=True, null=True)
     townboundaryDEFAULT = models.TextField(blank=True, null=True,
                                            verbose_name="BOUNDARY POLYGON DATA[<<{WKT}FORMAT => " +
                                                         polygon_info + ">>]")
