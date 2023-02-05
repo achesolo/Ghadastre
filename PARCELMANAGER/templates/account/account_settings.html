@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    {% load static %}
+
+    <style type="text/css">
+    .brass {
+      height: 80%;
+      margin-bottom: auto;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+  </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <title>Ghadastre</title>
+</head>
+
+<body>
+<header style=" position:fixed;top:0;left:0; right: 0;width:100%;">
+    <nav>
+        <div class="nav-wrapper black white-text">
+            <div style="padding-left: 15px; padding-right: 15px;">
+
+                <a href="{% url 'homepage' %}" class="brand-logo left">Ghadastre</a>
+                <ul class="right show-on-med-and-down valign-wrapper">
+                    <li class="hide"><a href="#" data-target="modal1" class="waves-effect white-text modal-trigger">Sign Up | Sign In</a></li>
+                    <li><a href="#" class="waves-effect white-text"><i class="material-icons left">account_circle</i>
+                        {{request.user.username}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+    <div style="margin-left: 50px; margin-top: 100px; margin-bottom: 100px;">
+        <div class="row">
+            <div class="col s12 m6 l7">
+                <div class="row">
+                    <div class="col s12 m6 l7">
+                        <h5>Basic Info</h5>
+                        <div class=" row">
+                            <div class="col s12 valign-wrapper left"><i class="material-icons">person</i>
+                                Name:<p style="margin-left:10px;" id="name">
+                                    {{user.first_name}} {{user.last_name}}</p>
+                                <a class="right" href="{% url 'editname' %}" style="margin-left:20px ;">
+                                    Edit</a></div>
+                        </div>
+                        <div class=" row">
+                            <div class="col s12 valign-wrapper left"><i class="material-icons">email</i>
+                                Email:<p style="margin-left:10px;" id="email">
+                                    {{user.email}}</p>
+                                <a class="right" href="{% url 'editemail' %}" style="margin-left:20px ;">Edit</a>
+                            </div>
+                        </div>
+                        <h5>Login Info</h5>
+                        <div class=" row">
+                            <div class="col s12 valign-wrapper left"><i class="material-icons">person</i>
+                                Username:<p style="margin-left:10px;" id="username">
+                                    {{user.username}}</p>
+                                <a class="right" href="{% url 'editusername' %}" style="margin-left:20px ;">Edit</a>
+                            </div>
+                        </div>
+                        <div class=" row">
+                            <div class="col s12 valign-wrapper left"><i class="material-icons">lock</i>
+                                Password :<p style="margin-left:10px;" id="password">
+                                    ***...</p><a class="right" href="{% url 'editpassword' %}" style="margin-left:20px ;">
+                                    Edit</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="page-footer black white-text" style="position:fixed;bottom:0;left:0;width:100%;">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h6 class="white-text">Ghadastre</h6>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © 2022 Copyright Ghadastre
+                <a class="grey-text text-lighten-4 right" href="{% url 'contributors' %}">Contributors</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

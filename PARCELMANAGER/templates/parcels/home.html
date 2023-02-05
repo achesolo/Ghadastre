@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- {% load static %} -->
+
+  <style type="text/css">
+    .fixed-action-btn {
+      left: 20px;
+      padding-bottom: 100px;
+    }
+
+    .fab1 {
+      bottom: 150px;
+    }
+
+    .ngl {
+      padding: 10px;
+    }
+
+    #favcolor {
+      width: 20px;
+      height: 20px;
+    }
+
+    .brass {
+      height: 80%;
+      margin-bottom: auto;
+      padding: 0;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+
+    #map {
+      width: 100%;
+      height: 69vh;
+    }
+
+    .containers {
+      /* width: 1370px; */
+      /* height: 455px; */
+      position: relative;
+    }
+
+    .box {
+      width: 100%;
+      height: 105%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0.7;
+    }
+
+    .overlay1 {
+      right: 0;
+      width: 60%;
+      height: 20%;
+      z-index: 9;
+      opacity: 0.8;
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/materialize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+
+  <title>Ghadastre</title>
+
+</head>
+
+<body style="height: 100%;overflow: scroll">
+<header>
+
+  <nav>
+    <div class="nav-wrapper black white-text">
+      <div style="padding-left: 15px; padding-right: 15px;">
+
+        <a href="{% url 'homepage' %}" class="brand-logo left">Ghadastre</a>
+        <ul class="right show-on-med-and-down valign-wrapper">
+          {% if request.user.is_authenticated %}
+          <li class=""><a href="#" class="waves-effect white-text dropdown-trigger" data-target='dropdown1'>
+            <i class="material-icons left">account_circle</i>
+            {{ request.user.username }}
+            <i class="material-icons right">arrow_drop_down</i></a></li>
+          {% else %}
+          <li class=""><a href="{% url 'signin' %}" class="waves-effect grey-effect white-text">Sign In</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <ul id="dropdown1" class="dropdown-content">
+    <li><a href="{% url 'accountsettings' %}" class="black-text">Account Settings</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li><a href="{% url 'signout' %}" class="black-text"><i class="material-icons">power_settings_new</i>Sign Out</a></li>
+  </ul>
+</header>
+
+<main style="background-color: black;">
+  <div class="containers">
+    <div id="map" class="box">
+
+    </div>
+  </div>
+
+  {% if request.user.is_authenticated %}
+  <div class="row box overlay1 valign-wrapper center" style="transform: translate(10%, 55px);">
+    <div class="col s12 m12 l12 white valign-wrapper" style="">
+      <form class="left col s12 m12 l12 valign-wrapper">
+        <div class="input-field col s12 m12 l12">
+          <input type="text" name="search" id="general_search" placeholder="Search" required/>
+        </div>
+
+        <a class=" black-text waves-effect" onclick="do_general_search()">
+          <i class="material-icons center-align">search</i>
+        </a>
+      </form>
+      <a class="col sml4 waves-effect waves-light right valign-wrapper right black-text dropdown-trigger"
+         data-target="dropdown3" href="#" data-constrainwidth="false">
+        <i class="material-icons">more_vert</i>
+      </a>
+    </div>
+  </div>
+  <ul id="dropdown2" class="dropdown-content">
+    <li><a href="" class="black-text">koose</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li><a href="" class="black-text">koose</a></li>
+  </ul>
+
+  <ul id="dropdown3" class="dropdown-content" style="width:300px">
+    <li><a class="black-text modal-trigger" data-target="search_by_point_modal">
+      <i class="material-icons left" style="margin-right: 5px;margin-left: -10px">room</i>
+      Search Parcel By Point</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li class=""><a class="black-text modal-trigger" data-target="search_by_feature_modal">
+      <i class="material-icons" style="margin-right: 5px;margin-left: -10px">layers</i>
+      Search Parcel By Feature Type</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li class=""><a class="black-text" onclick="do_live_point_search()">
+      <i class="material-icons" style="margin-right: 5px;margin-left: -10px">places</i>
+      Search Parcel Using Live Location</a></li>
+    <li class="divider" tabindex="-1"></li>
+    <li><a onclick="open_search_popup()" class="black-text modal-trigger" id="search_results_button"
+           data-target="search_results_modal">
+      <i class="material-icons" style="margin-right: 5px;margin-left: -10px">
+        list</i>Search Results</a></li>
+  </ul>
+
+  {% else %}
+
+  {% endif %}
+
+  <div class="fixed-action-btn fab1" style="width:50px; z-index: 9;">
+    {% if request.user.is_authenticated %}
+    <a class="btn-floating black modal-trigger" onclick="create_parcel_settings()"
+       data-target="settings_modal" style="margin: 10px;">
+      <i class="large material-icons">settings</i>
+    </a>
+    <br>
+    <a class="btn-floating black modal-trigger" data-target="transform_modal" style="margin: 10px;">
+      <i class="large material-icons">transform</i>
+    </a>
+    {% else %}
+    <br>
+    <a class="btn-floating black modal-trigger" data-target="transform_modal" style="margin: 10px;">
+      <i class="large material-icons">transform</i>
+    </a>
+<!--        <br>-->
+    <!--    <a class="btn-floating  black modal-trigger" data-target="layers_modal" style="margin: 10px;">-->
+    <!--      <i class="large material-icons">layers</i>-->
+    <!--    </a>-->
+    {% endif %}
+  </div>
+
+  <div id="search_by_point_modal" class="modal modal-fixed-footer" style="width: 300px; height: 420px;">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12 l12">
+          <h5 class="center-align">Search Parcel By Point</h5>
+        </div>
+        <form>
+          <div style=" opacity: 1;">
+            <div class="col l12 s12">
+              <div class="input-field">
+                <input type="text" name="el" id="search_by_point_modal_el" required />
+                <label for="search_by_point_modal_el">Easting/Longitude</label>
+              </div>
+              <div class="input-field">
+                <input type="text" name="nl" id="search_by_point_modal_nl" required />
+                <label for="search_by_point_modal_nl">Northing/Latitude</label>
+              </div>
+            </div>
+            <div class="col l12 s12" style="width: 100%;">
+              <label>Select Coordinate System</label>
+              <select class="browser-default" id="search_by_point_modal_coordinatesystems" required>
+                <option value="" disabled selected>
+                  Choose your option
+                </option>
+                {% if coordinatesystems %}
+
+                {% for coordinatesystem in coordinatesystems %}
+                <option value="{{ coordinatesystem.srid }}" id="search_by_point_modal_{{ coordinatesystem.id }}">
+                  {{ coordinatesystem.name }} [UNIT: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | EPSG CODE: {{ coordinatesystem.srid }}]
+                </option>
+                {% endfor %}
+
+                {% endif %}
+              </select>
+            </div>
+
+            <div class="col l12 s12 " style="margin-top: 60px;margin-bottom:0px;">
+
+              <a class="black-text modal-close right" href="#" type="submit" onclick="do_point_search()">OK</a>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div id="search_by_feature_modal" class="modal" style="width: 350px; height: 420px;">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12 l12">
+          <h5 class="center-align">Search Parcel By Feature Type</h5>
+        </div>
+        <form>
+          <div style="padding: 10px; opacity: 1;">
+            <div class="col l12 s12" style="width: 100%;">
+              <label>Select Feature Type</label>
+              <select class="browser-default" id="search_by_feature_modal_feature_type" required>
+                <option value="" disabled selected>
+                  Choose your feature type
+                </option>
+                <option value="POINT">
+                  Point
+                </option>
+                <option value="POLYGON">
+                  Polygon
+                </option>
+              </select>
+
+              <label>Select Coordinate System</label>
+              <select class="browser-default" id="search_by_feature_modal_coordinatesystems" required>
+                <option value="" disabled selected>
+                  Choose your option
+                </option>
+                {% if coordinatesystems %}
+
+                {% for coordinatesystem in coordinatesystems %}
+                <option value="{{ coordinatesystem.srid }}" id="search_by_feature_modal_{{ coordinatesystem.id }}">
+                  {{ coordinatesystem.name }} [UNIT: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | EPSG CODE: {{ coordinatesystem.srid }}]
+                </option>
+                {% endfor %}
+                {% endif %}
+              </select>
+            </div>
+            <div class="col l12 s12" style="width: 100%;">
+              <label>Enter coordinates</label>
+              <textarea style="height: 100px;" name="feature_coordinates"
+                        id="search_by_feature_modal_coordinates" required></textarea>
+
+              <p><b>Coordinate Format:</b> <strong>{ Point=>x1 y1 | Polygon=>x1 y1, x2 y2, ...x1 y1 }</strong></p>
+            </div>
+            <div class="col l12 s12 right-align" style="margin-top: 20px;margin-bottom: 20px;">
+              <a class="black-text modal-close" href="#" type="submit" onclick="do_feature_search()">OK</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings_modal" class="modal" style="width: 300px; height: 500px;">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12 l12">
+          <h5 class="center-align">Settings</h5>
+        </div>
+        <form action="#">
+          <h6><strong>General Parcels</strong></h6>
+          <div class="row">
+            <p class="col s5">Outline Colour: </p>
+            <div class="input-field col s3">
+              <input type="color" id="gen_parcel_outline_color">
+            </div>
+          </div>
+          <div class="row">
+            <p class="col s5">Outline Width: </p>
+            <div class="input-field col s3">
+              <input type="number" min="1" max="50" style="width:50px" id="gen_parcel_outline_width">
+            </div>
+          </div>
+          <div class="row">
+            <p class="col s5">Fill Colour: </p>
+            <div class="input-field col s7">
+              <input type="color" id="gen_parcel_fill_color">
+            </div>
+          </div>
+          <div class="row">
+            <p class="col s5">Fill Colour Opacity: </p>
+            <p class="range-field col s7">
+              <input type="range" min="0" max="100" step="1" id="gen_parcel_fill_color_opacity">
+            </p>
+          </div>
+          <h6><strong>Selected Parcels</strong></h6>
+          <div class="row">
+            <p class="col s5">Outline Colour: </p>
+            <div class="input-field col s3">
+              <input type="color" id="sel_parcel_outline_color">
+            </div>
+          </div>
+          <div class="row">
+            <p class="col s5">Outline Width: </p>
+            <div class="input-field col s3">
+              <input type="number" min="1" max="50" style="width:50px;" id="sel_parcel_outline_width">
+            </div>
+          </div>
+          <div class="row">
+            <p class="col s5">Fill Colour: </p>
+            <div class="input-field col s3">
+              <input type="color" id="sel_parcel_fill_color">
+            </div>
+          </div>
+          <div class="row">
+            <p class="col s5">Fill Colour Opacity: </p>
+            <p class="range-field col s7">
+              <input type="range" min="0" max="100" step="1" id="sel_parcel_fill_color_opacity">
+            </p>
+          </div>
+          <div class="col l12 s12 right-align" style="margin-top: 20px;margin-bottom: 20px;">
+            <a class="black-text modal-close" href="#" type="submit" onclick="change_parcel_settings()">OK</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+    <div id="transform_modal" class="modal" style="width: 300px; height: 420px;">
+      <div class="modal-content">
+        <div class="row">
+          <div class="col s12 l12">
+            <h5 class="center-align">Coordinate Conversion</h5>
+          </div>
+          <form id="transform_modal_form">
+            <div style="padding: 10px; opacity: 1;">
+              <div class="col l12 s12" style="width: 100%; margin-bottom: 20px;">
+                <label>Original Coordinate System</label>
+                <select class="browser-default" id="transform_modal_old_coordinatesystems" required>
+                  <option value="" disabled selected>
+                    Choose your option
+                  </option>
+                  {% if coordinatesystems %}
+                  {% for coordinatesystem in coordinatesystems %}
+                  <option value="{{ coordinatesystem.srid }}"
+                          id="transform_modal_old_coordinatesystem_{{ coordinatesystem.id }}">
+                   {{ coordinatesystem.name }} [UNIT: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | EPSG CODE: {{ coordinatesystem.srid }}]
+                  </option>
+                  {% endfor %}
+                  {% endif %}
+                </select>
+              </div>
+              <div class="row" style="margin-top: 10px; padding: 10px;">
+                <label >Enter old coordinates</label>
+                <textarea name="transform_modal_old_coordinates" id="transform_modal_old_coordinates"
+                          style="border-color: grey;border-style: solid;"></textarea>
+              </div>
+              <div class="col l12 s12" style="width: 100%; margin-top: 10px;">
+                <label>Expected Coordinate System</label>
+                <select class="browser-default" id="transform_modal_new_coordinatesystems" required>
+                  <option value="" disabled selected>
+                    Choose your option
+                  </option>
+                  {% if coordinatesystems %}
+                  {% for coordinatesystem in coordinatesystems %}
+                  <option value="{{ coordinatesystem.srid }}"
+                          id="transform_modal_new_coordinatesystem_{{ coordinatesystem.id }}">
+                   {{ coordinatesystem.name }} [UNIT: {{ coordinatesystem.unitname }} ({{ coordinatesystem.unitsymbol }}) | EPSG CODE: {{ coordinatesystem.srid }}]
+                  </option>
+                  {% endfor %}
+                  {% endif %}
+                </select>
+              </div>
+              <div class="col l12 s12 right-align" style="margin-top: 40px; margin-bottom: 30px;">
+                <a class="black-text" href="#" type="submit" onclick="do_coordinate_conversion()">Convert</a>
+              </div>
+
+            </div>
+          </form>
+          <div class="row" style="padding: 10px;">
+            <label >New coordinates</label>
+            <textarea name="transform_modal_new_coordinates" id="transform_modal_new_coordinates"
+                      style="border-color: grey;border-style: solid;"></textarea>
+          </div>
+          <div class="col l12 s12 right-align" style="margin-top: 20px;margin-bottom: 20px;">
+            <a class="black-text modal-close" href="#" type="submit" >OK</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div id="search_results_modal" class="modal black-text search_results" style="width: 350px; height: 400px;">
+    <div class="modal-content">
+      <div class="row">
+        <div class="col s12 l12">
+          <h5 class="center-align">Search Results</h5>
+        </div>
+
+        <div style="opacity: 1;">
+          <div class="col l12 s12" style="width: 100%;">
+            <form action="#">
+              <div style="height: 150px; overflow: scroll;" id="search_results_modal_search_results">
+
+
+              </div>
+              <div class="col l12 s12 " style="margin-top: 20px;">
+                <ul class="pagination center-align">
+                  <li class="waves-effect" id="search_results_modal_first_page">
+                    <a href="#" onclick="show_search_results_modal_first_page()">
+                      <i class="material-icons">
+                        first_page
+                      </i></a></li>
+                  <li class="waves-effect" id="search_results_modal_previous_page">
+                    <a href="#" onclick="show_search_results_modal_previous_page()">
+                      <i class="material-icons">
+                        chevron_left
+                      </i></a></li>
+                  <li class="waves-effect active black"><a id="search_results_modal_page_number">
+                    1 of 1</a>
+                  </li>
+                  <li class="waves-effect" id="search_results_modal_next_page">
+                    <a href="#" onclick="show_search_results_modal_next_page()">
+                      <i class="material-icons">
+                        chevron_right
+                      </i></a></li>
+                  <li class="waves-effect" id="search_results_modal_last_page">
+                    <a href="#" onclick="show_search_results_modal_last_page()">
+                      <i class="material-icons">
+                        last_page
+                      </i></a></li>
+                </ul>
+
+              </div>
+
+              <div class="col l12 s12 right-align" style="margin-top: 20px;">
+                <a id="search_results_modal_button" class="black-text modal-close" href="#"
+                   type="submit">OK</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer black white-text" style=" position:fixed;bottom:0;left:0;width:100%;">
+    <div class="container" style="height: 45px">
+      <div class="row">
+        <div class="col l6 s12">
+          <h6 class="white-text">Ghadastre</h6>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container" style="height:30px">
+        © 2022 Copyright Ghadastre
+        <a class="grey-text text-lighten-4 right" href="{% url 'contributors' %}">Contributors</a>
+      </div>
+    </div>
+  </footer>
+</body>
+<script type="text/javascript">
+     // Instantiating the map object and setting the parameters
+     //
+     var attribute = 'EFKINITOS GROUP @ DEPARTMENT OF GEOMATIC ENGINEERING, KNUST';
+     var zoom = 6;
+     var maxzoom = 20;
+     var center = [7.023, 1.87];
+
+     var live_point;
+
+     var map = L.map('map', {
+        center: center,
+        zoom: zoom,
+        maxZoom: maxzoom,
+        crs: L.CRS.EPSG3857,
+        tap: false,
+     });
+
+     // Adjusting the position of the zoom controls
+     //
+     map.zoomControl.setPosition('bottomright');
+     map.attributionControl.setPrefix("");
+
+     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: attribute + ' &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxNativeZoom: 20,
+        maxZoom: 20,
+     }).addTo(map);
+
+     var loc = L.control.locate({
+        position: "bottomright",
+        strings: {
+          title: "Live location"
+        },
+        locateOptions: {
+          enableHighAccuracy: true,
+          watch: true
+        }
+     }).addTo(map);
+
+     map.on('locationfound', function(event) {
+        var point = event.latlng
+        live_point = [point.lat, point.lng]
+     });
+
+     // PARCELS APPEARANCE
+     //
+     var GENERAL_PARCEL_OUTLINE_COLOR;
+     var GENERAL_PARCEL_OUTLINE_WIDTH;
+     var GENERAL_PARCEL_FILL_COLOR;
+     var GENERAL_PARCEL_FILL_COLOR_OPACITY;
+
+     var SELECTED_PARCEL_OUTLINE_COLOR;
+     var SELECTED_PARCEL_OUTLINE_WIDTH;
+     var SELECTED_PARCEL_FILL_COLOR;
+     var SELECTED_PARCEL_FILL_COLOR_OPACITY;
+
+     create_parcel_settings();
+
+
+     // The variables for the various datatypes used
+     //
+     var parcels_data = {};
+     var selected_parcels;
+     var selected_parcel_code;
+     var selected_parcel_data;
+     var search_type;
+     var page_number;
+     var number_of_pages;
+
+     {% if request.user.is_authenticated %}
+
+      var bounds_list = clean_getbounds_coordinates(map);
+        get_sorted_zoom_parcels(bounds_list, 40);
+
+        map.on('zoomend', zoom_end_function);
+        map.on('dragend', drag_end_function);
+        map.on('moveend', move_end_function);
+
+
+        function zoom_end_function(){
+            add_parcels_to_map();
+         }
+
+
+        function drag_end_function(){
+            add_parcels_to_map();
+         };
+
+
+        function move_end_function(){
+            add_parcels_to_map();
+        };
+
+
+        function add_parcels_to_map(){
+            var bounds_list = clean_getbounds_coordinates(map);
+
+            if (map.getZoom() >= 18){
+                get_all_zoom_parcels(bounds_list)
+            }else if (map.getZoom() >= 16){
+                get_sorted_zoom_parcels(bounds_list, 100);
+            }else if (map.getZoom() >= 14){
+                get_sorted_zoom_parcels(bounds_list, 80);
+            }else if (map.getZoom() >= 12){
+                get_sorted_zoom_parcels(bounds_list, 70);
+            }else if (map.getZoom() >= 10){
+                get_sorted_zoom_parcels(bounds_list, 60);
+            }else if (map.getZoom() >= 8){
+                get_sorted_zoom_parcels(bounds_list, 50);
+            }else if (map.getZoom() < 8){
+                get_sorted_zoom_parcels(bounds_list, 40);
+            };
+        };
+
+    {% else %}
+
+    {% endif %}
+
+
+<!--    map.on('zoomend', function(){-->
+<!--        var mo = map.getBounds().toBBoxString();-->
+
+<!--        alert(mo);-->
+<!--    });-->
+
+
+    function convert_point_from_wkt(wkt){
+            // wkt format =>> 'POINT (1 2)'
+            // required format =>> [6, 5]
+
+            var cleaned;
+            _wkt = wkt.split("(")[1].split(")")[0]
+
+            cleaned = _wkt.trim().split(" ");
+            var latitude = cleaned[0];
+            var longitude = cleaned[1];
+            cleaned = [longitude, latitude];
+
+            return cleaned;
+    };
+
+
+    function convert_multipoint_from_wkt(wkt){
+            // wkt format =>> 'MULTIPOINT (1 2, 0 0)'
+            // required format =>> [[6, 5], [9, 1], [6, 1], [6, 5]]
+
+            var cleaned = [];
+            var cleaned_detail;
+            _wkt = wkt.split("(")[1].split(")")[0].split(",");
+
+            for (let item_index in _wkt) {
+                   cleaned_detail = _wkt[item_index].trim().split(" ");
+                   var latitude = cleaned_detail[0];
+                   var longitude = cleaned_detail[1];
+                   cleaned_detail = [longitude, latitude];
+                   cleaned.push(cleaned_detail);
+                   var cleaned_detail;
+                };
+
+            return cleaned;
+    };
+
+
+    function convert_polygon_from_wkt(wkt){
+            // wkt format =>> 'POLYGON ((6 5, 9 1, 6 1, 6 5))'
+            // required format =>> [[6, 5], [9, 1], [6, 1], [6, 5]]
+
+            var cleaned = [];
+            var cleaned_detail;
+            _wkt = wkt.split("((")[1].split("))")[0].split(",");
+
+            for (let item_index in _wkt) {
+                   cleaned_detail = _wkt[item_index].trim().split(" ")
+                   var latitude = cleaned_detail[0];
+                   var longitude = cleaned_detail[1];
+                   cleaned_detail = [longitude, latitude];
+                   cleaned.push(cleaned_detail)
+                   var cleaned_detail;
+                };
+
+            return cleaned;
+    };
+
+
+    function clean_getbounds_coordinates(map){
+        var bounds = map.getBounds();
+        var ne_coords = bounds.getNorthEast();
+        var sw_coords = bounds.getSouthWest();
+
+        return [ne_coords.lng, ne_coords.lat, sw_coords.lng, sw_coords.lat]
+    };
+
+
+    function plot_parcels(parcels){
+        // Note why this variable is used
+        current_parcels = [];
+
+        for (let parcel_index in parcels) {
+            parcel = parcels[parcel_index];
+            code = String(parcel.code);
+            area = String(parcel.area);
+            perimeter = String(parcel.perimeter);
+            unitsymbol = String(parcel.parcelCRS__unitsymbol)
+            boundarycoords = String(parcel.parcelboundaryWGS84)
+
+            current_parcels.push(code);
+
+            if (parcels_data[code] === undefined){
+
+                var url = "/parceldetail/" + code
+                var popup_msg = "<b><h5>GHADASTRE</h5></b><hr><h6>" + "PARCEL ID:" +
+                "<b>" + code + "</b>" + "</h6><p><h6>" + "AREA: " + "<b>" + area + " " +
+                unitsymbol + "²</b>" + "</h6></p><p><h6>" + "PERIMETER: " +"<b>" +
+                perimeter + " " + unitsymbol + "</b>" + "</h6></p><p><h6><a href=" + url +
+                "><b>More...</b></a></h6></p>";
+                var tooltip_msg = code;
+                var parcel_coordinates = convert_polygon_from_wkt(boundarycoords);
+
+                var parcel_polygon = L.polygon(parcel_coordinates, {
+                        color: GENERAL_PARCEL_OUTLINE_COLOR,
+                        fillOpacity: GENERAL_PARCEL_FILL_COLOR_OPACITY,
+                        fillColor: GENERAL_PARCEL_FILL_COLOR,
+                        weight: GENERAL_PARCEL_OUTLINE_WIDTH,
+                }).addTo(map);
+
+                parcel_polygon.bringToBack();
+
+                parcel_polygon.bindPopup(popup_msg);
+
+                parcel_polygon.bindTooltip(tooltip_msg,
+                    {permanent: true,
+                     direction: center,
+                     className: 'tooltip',
+                }).openTooltip();
+
+                var data = {
+                    "map_item": parcel_polygon,
+                    "coordinates": parcel_coordinates,
+                    "code": code,
+                };
+
+                parcels_data[code] = data;
+
+            };
+
+        };
+
+         for (let code in parcels_data){
+            if (current_parcels.includes(code) === false){
+                map.removeLayer(parcels_data[code].map_item);
+<!--                parcels_data[code].map_item.remove();-->
+                delete parcels_data[code];
+            };
+
+            if (String(code) === String(selected_parcel_code)){
+                map.removeLayer(parcels_data[code].map_item);
+<!--                parcels_data[code].map_item.remove();-->
+                delete parcels_data[code];
+            };
+        };
+
+    };
+
+
+    function get_sorted_zoom_parcels(bounds_list, number) {
+      var lon1 = String(bounds_list[0])
+      var lat1 = String(bounds_list[1])
+      var lon2 = String(bounds_list[2])
+      var lat2 = String(bounds_list[3])
+      var num = String(number)
+      var url = "/sortedzoomparcels/" + lon1 + "/" + lat1 + "/" + lon2 + "/" + lat2 + "/" + num;
+
+      fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+        .then(response => {
+          return response.json()
+        })
+        .then(parcels => {
+           plot_parcels(parcels);
+
+        });
+
+    };
+
+
+    function get_all_zoom_parcels(bounds_list) {
+      var lon1 = String(bounds_list[0])
+      var lat1 = String(bounds_list[1])
+      var lon2 = String(bounds_list[2])
+      var lat2 = String(bounds_list[3])
+      var url = "/allzoomparcels/" + lon1 + "/" + lat1 + "/" + lon2 + "/" + lat2;
+
+      fetch(url, {
+          method: "GET",
+          headers: {
+            "Accept": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+        .then(response => {
+          return response.json()
+        })
+        .then(parcels => {
+           plot_parcels(parcels);
+
+        });
+
+    };
+
+
+    function search_parcel_general(page_number) {
+        var search_term = document.getElementById('general_search').value;
+        var url = "/searchparcelgeneral/" + String(search_term) + "/" + String(page_number);
+
+
+        fetch(url, {
+                method: "GET",
+                headers: {
+                  "Accept": "application/json",
+                  "X-Requested-With": "XMLHttpRequest",
+                },
+        })
+        .then(response => {
+              return response.json()
+        })
+        .then(results => {
+               set_search_results_modal(results.parcels, page_number, results.number_of_pages);
+        });
+
+    };
+
+
+
+    function search_parcel_by_point(page_number){
+        // Note that the URL is hardcoded
+        // Must be changed anytime the view URL changes
+        var el = document.getElementById('search_by_point_modal_el').value;
+        var nl = document.getElementById('search_by_point_modal_nl').value;
+        var srid = document.getElementById('search_by_point_modal_coordinatesystems').value;
+        var url = "/searchparcelbypoint/" + String(el) + "/" + String(nl) + "/" +
+                  String(srid) + "/" + String(page_number);
+
+        fetch(url, {
+        method: "GET",
+        headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => {
+            return response.json()
+        })
+        .then(results => {
+            set_search_results_modal(results.parcels, page_number, results.number_of_pages);
+        })
+        .catch(error => {
+            alert("Failed! \nFill all input fields");
+        })
+    };
+
+
+    function search_parcel_by_feature(page_number){
+        // Note that the URL is hardcoded
+        // Must be changed anytime the view URL changes
+
+        var featuretype = document.getElementById('search_by_feature_modal_feature_type').value;
+        var featurecoords = document.getElementById('search_by_feature_modal_coordinates').value;
+        var srid = document.getElementById('search_by_feature_modal_coordinatesystems').value;
+        var feature;
+
+        if (featuretype === 'POINT'){
+            feature = "POINT (" + String(featurecoords) + ")";
+        }else {
+            feature = "POLYGON ((" + String(featurecoords) + "))";
+        };
+
+
+        var url = "/searchparcelbyfeaturetype/" + feature + "/" + String(srid) + "/" + String(page_number);
+
+        fetch(url, {
+        method: "GET",
+        headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => {
+            return response.json()
+        })
+        .then(results => {
+            set_search_results_modal(results.parcels, page_number, results.number_of_pages);
+        })
+        .catch(error => {
+            alert("Failed! \nFill all input fields");
+        })
+    };
+
+
+    function search_parcel_by_live_point(page_number){
+        // Note that the URL is hardcoded
+        // Must be changed anytime the view URL changes
+        // el=> easting or longitude, nl=> northing or latitude
+        var el = String(live_point[1]);
+        var nl = String(live_point[0]);
+        var srid = "4326";
+        var url = "/searchparcelbypoint/" + String(el) + "/" + String(nl) + "/" +
+                  String(srid) + "/" + String(page_number);
+
+        fetch(url, {
+        method: "GET",
+        headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => {
+            return response.json()
+        })
+        .then(results => {
+            set_search_results_modal(results.parcels, page_number, results.number_of_pages);
+        })
+        .catch(error => {
+            alert("Failed! \nFill all input fields");
+        })
+    };
+
+
+    function set_search_results_modal(parcels, page, total_pages){
+
+        if (parcels !== null){
+              selected_parcels = parcels;
+              page_number = page;
+              number_of_pages = total_pages;
+
+              var first_radiobutton_element;
+
+              var radiobuttons_parent_element = document.getElementById('search_results_modal_search_results');
+              radiobuttons_parent_element.innerHTML = "";
+
+              // Using createDocumentFragment to create the element
+              // for efficiency
+              fragment = document.createDocumentFragment();
+
+              var page_number_element = document.getElementById('search_results_modal_page_number');
+
+
+              // Radiobutton format
+              // <p><label><input name="group1" type="radio" checked class="black" value="Red"/>
+              // <span>Red</span> </label></p>
+              // <li class="waves-effect" id="search_results_modal_first_page"><a href="#!">
+              // <i class="material-icons" id="search_results_modal_first_page_text">
+
+
+              for (let index in selected_parcels){
+                  var parcel = selected_parcels[index];
+                  var code = String(parcel.code);
+                  var owner = output_string(parcel.owner__firstname) + " " +
+                  output_string(parcel.owner_surname) + " " + output_string(parcel.othernames);
+
+                  var p_element = document.createElement("p");
+                  var label_element = document.createElement('label');
+                  var input_element = document.createElement('input');
+                  var span_element = document.createElement('span');
+                  var lp_element = document.createElement("p");
+
+                  p_element.appendChild(label_element);
+                  label_element.appendChild(input_element);
+                  label_element.appendChild(span_element);
+                  label_element.appendChild(lp_element);
+
+                  input_element.name = 'selected_parcels';
+                  input_element.type = 'radio';
+                  input_element.class = 'black';
+                  input_element.value = code;
+                  input_element.id = code;
+
+                  span_element.innerText = code;
+                  lp_element.innerText = owner;
+
+                  fragment.appendChild(p_element);
+
+                  if (String(index) === String(0)){
+                      first_radiobutton_element = input_element;
+                  };
+
+
+                  // Note the implementation. Using javascript closure to
+                  // skip the code global variable and localize it to the
+                  // function
+                  input_element.addEventListener('click', function(parcel_code){
+                      return function(){
+                          plot_selected_parcel(parcel_code);
+                      };
+                  }(code), );
+
+              };
+
+              radiobuttons_parent_element.appendChild(fragment);
+              first_radiobutton_element.click();
+
+              page_number_element.innerText = String(page_number) +
+                                              " of " + String(number_of_pages);
+
+
+        }else{
+
+            page_number = 1;
+            number_of_pages = 1;
+            selected_parcels = undefined;
+            selected_parcel_code = undefined;
+
+            if (selected_parcel_data !== undefined){
+                map.removeLayer(selected_parcel_data.map_item);
+                selected_parcel_data = undefined;
+            };
+
+            radiobuttons_parent_element = document.getElementById('search_results_modal_search_results');
+            radiobuttons_parent_element.innerHTML = "";
+
+            var page_number_element = document.getElementById('search_results_modal_page_number');
+
+            page_number_element.innerText = String(page_number) +
+                                              " of " + String(number_of_pages);
+
+            map.setZoom(6);
+
+
+        };
+
+    };
+
+
+    function show_search_results_modal_first_page(){
+          if (String(search_type) === "general_search"){
+              search_parcel_general(1);
+
+          }else if (String(search_type) === "point_search"){
+              search_parcel_by_point(1);
+
+          }else if (String(search_type) === "feature_search"){
+              search_parcel_by_feature(1);
+
+          }else if (String(search_type) === "live_point_search"){
+              search_parcel_by_live_point(1);
+          };
+    };
+
+
+    function show_search_results_modal_previous_page(){
+        if (String(search_type) === "general_search"){
+            if (String(page_number) !== String(1)){
+                search_parcel_general(page_number - 1);
+            };
+
+        }else if (String(search_type) === "point_search"){
+            if (String(page_number) !== String(1)){
+                search_parcel_by_point(page_number - 1);
+            };
+
+        }else if (String(search_type) === "feature_search"){
+            if (String(page_number) !== String(1)){
+                search_parcel_by_feature(page_number - 1);
+            };
+        }else if (String(search_type) === "live_point_search"){
+            if (String(page_number) !== String(1)){
+                search_parcel_by_live_point(page_number - 1);
+            };
+        };
+
+    };
+
+
+    function show_search_results_modal_next_page(){
+
+        if (String(search_type) === "general_search"){
+            if (String(page_number) !== String(number_of_pages)){
+                search_parcel_general(page_number + 1);
+            };
+
+        }else if (String(search_type) === "point_search"){
+            if (String(page_number) !== String(number_of_pages)){
+                search_parcel_by_point(page_number + 1);
+            };
+
+        }else if (String(search_type) === "feature_search"){
+            if (String(page_number) !== String(number_of_pages)){
+                search_parcel_by_feature(page_number + 1);
+            };
+        }else if (String(search_type) === "live_point_search"){
+            if (String(page_number) !== String(1)){
+                search_parcel_by_live_point(page_number - 1);
+            };
+        };
+
+    };
+
+
+    function show_search_results_modal_last_page(){
+        if (String(search_type) === "general_search"){
+            search_parcel_general(number_of_pages);
+
+        }else if (String(search_type) === "point_search"){
+            search_parcel_by_point(number_of_pages);
+
+        }else if (String(search_type) === "feature_search"){
+            search_parcel_by_feature(number_of_pages);
+
+        }else if (String(search_type) === "live_point_search"){
+            search_parcel_by_live_point(number_of_pages);
+
+        };
+
+    };
+
+
+    function plot_selected_parcel(parcel_code){
+            var parcel;
+
+            if (selected_parcel_data !== undefined){
+                map.removeLayer(selected_parcel_data.map_item);
+                selected_parcel_data = undefined;
+            };
+
+            for (let item_index in selected_parcels){
+                   p_code = String(selected_parcels[item_index].code);
+
+                   if (String(p_code) == String(parcel_code)){
+                       parcel = selected_parcels[item_index];
+                   };
+            };
+
+            code = String(parcel.code);
+            area = String(parcel.area);
+            perimeter = String(parcel.perimeter);
+            unitsymbol = String(parcel.parcelCRS__unitsymbol);
+            boundarycoords = String(parcel.parcelboundaryWGS84);
+
+
+            var url = "/parceldetail/" + code
+            var popup_msg = "<b><h5>GHADASTRE</h5></b><hr><h6>" + "PARCEL ID:" +
+                "<b>" + code + "</b>" + "</h6><p><h6>" + "AREA: " + "<b>" + area + " " +
+                unitsymbol + "²</b>" + "</h6></p><p><h6>" + "PERIMETER: " +"<b>" +
+                perimeter + " " + unitsymbol + "</b>" + "</h6></p><p><h6><a href=" + url +
+                "><b>More...</b></a></h6></p>";
+            var tooltip_msg = code;
+            var parcel_coordinates = convert_polygon_from_wkt(boundarycoords);
+
+            var parcel_polygon = L.polygon(parcel_coordinates, {
+                        color: SELECTED_PARCEL_OUTLINE_COLOR,
+                        fillOpacity: SELECTED_PARCEL_FILL_COLOR_OPACITY,
+                        fillColor: SELECTED_PARCEL_FILL_COLOR,
+                        weight: SELECTED_PARCEL_OUTLINE_WIDTH,
+            }).addTo(map);
+
+            parcel_polygon.bindPopup(popup_msg);
+
+            parcel_polygon.bindTooltip(tooltip_msg,
+                    {permanent: true,
+                     direction: center,
+                     className: 'tooltip',
+            }).openTooltip();
+
+            var data = {
+                    "map_item": parcel_polygon,
+                    "coordinates": parcel_coordinates,
+                    "code": code,
+            };
+
+            selected_parcel_data = data;
+            selected_parcel_code = code
+
+            map.fitBounds(parcel_polygon.getBounds(), {padding: [50, 50]});
+
+<!--            map.setZoom(19);-->
+
+    };
+
+
+    function do_general_search(){
+         search_term = document.getElementById('general_search').value
+         if (search_term !== ""){
+             search_type = "general_search";
+             search_parcel_general(1);
+
+             button = document.getElementById("search_results_button");
+             button.click();
+
+         }else{
+             alert("Fill the search field");
+         };
+
+    };
+
+
+    function do_point_search(){
+        el = document.getElementById('search_by_point_modal_el').value;
+        nl = document.getElementById('search_by_point_modal_nl').value;
+        srid = document.getElementById('search_by_point_modal_coordinatesystems').value;
+
+        if (String(el) !== "" && String(nl) !== "" && String(srid) !== ""){
+            search_type = "point_search";
+            search_parcel_by_point(1);
+
+            button = document.getElementById("search_results_button");
+            button.click();
+
+        }else{
+            alert("Fill all the fields");
+        };
+
+    };
+
+
+    function do_feature_search(){
+
+        featuretype = document.getElementById('search_by_feature_modal_feature_type').value;
+        featurecoords = document.getElementById('search_by_feature_modal_coordinates').value;
+        srid = document.getElementById('search_by_feature_modal_coordinatesystems').value;
+
+        if (String(featuretype) !== "" && String(featurecoords) !== "" && String(srid) !== ""){
+            search_type = "feature_search";
+            search_parcel_by_feature(1);
+
+            button = document.getElementById("search_results_button");
+            button.click();
+
+        }else{
+            alert("Fill all the fields");
+        };
+
+    };
+
+
+    function do_live_point_search(){
+
+        if (live_point !== undefined){
+            search_type = "live_point_search";
+            search_parcel_by_live_point(1);
+
+            button = document.getElementById("search_results_button");
+            button.click();
+
+        }else{
+            alert("Current location not found! \nMake sure location is turned on and try again");
+        };
+
+    };
+
+
+    function create_parcel_settings(){
+<!--        localStorage.clear();-->
+        var settings;
+
+        if (localStorage.getItem("PARCELS_SETTINGS") == null){
+
+            settings = '{"GENERAL_PARCEL_OUTLINE_COLOR": "#070FF2", "GENERAL_PARCEL_OUTLINE_WIDTH": "2", \
+            "GENERAL_PARCEL_FILL_COLOR": "#070FF2", "GENERAL_PARCEL_FILL_COLOR_OPACITY": "0", \
+            "SELECTED_PARCEL_OUTLINE_COLOR": "#070FF2", "SELECTED_PARCEL_OUTLINE_WIDTH": "2", \
+            "SELECTED_PARCEL_FILL_COLOR": "#070FF2", "SELECTED_PARCEL_FILL_COLOR_OPACITY": "0"}';
+
+            localStorage.setItem("PARCELS_SETTINGS", settings);
+
+            settings = JSON.parse(settings);
+
+        }else{
+            settings = JSON.parse(localStorage.getItem("PARCELS_SETTINGS"));
+
+
+        };
+
+        GENERAL_PARCEL_OUTLINE_COLOR = settings.GENERAL_PARCEL_OUTLINE_COLOR;
+        GENERAL_PARCEL_OUTLINE_WIDTH = settings.GENERAL_PARCEL_OUTLINE_WIDTH * 1;
+        GENERAL_PARCEL_FILL_COLOR = settings.GENERAL_PARCEL_FILL_COLOR;
+        GENERAL_PARCEL_FILL_COLOR_OPACITY = parseInt(settings.GENERAL_PARCEL_FILL_COLOR_OPACITY * 100);
+
+        SELECTED_PARCEL_OUTLINE_COLOR = settings.SELECTED_PARCEL_OUTLINE_COLOR;
+        SELECTED_PARCEL_OUTLINE_WIDTH = settings.SELECTED_PARCEL_OUTLINE_WIDTH * 1;
+        SELECTED_PARCEL_FILL_COLOR = settings.SELECTED_PARCEL_FILL_COLOR;
+        SELECTED_PARCEL_FILL_COLOR_OPACITY = parseInt(settings.SELECTED_PARCEL_FILL_COLOR_OPACITY * 100);
+
+        document.getElementById('gen_parcel_outline_color').value = GENERAL_PARCEL_OUTLINE_COLOR;
+        document.getElementById('gen_parcel_outline_width').value = GENERAL_PARCEL_OUTLINE_WIDTH;
+        document.getElementById('gen_parcel_fill_color').value = GENERAL_PARCEL_FILL_COLOR;
+        document.getElementById('gen_parcel_fill_color_opacity').value = GENERAL_PARCEL_FILL_COLOR_OPACITY;
+
+        document.getElementById('sel_parcel_outline_color').value = SELECTED_PARCEL_OUTLINE_COLOR;
+        document.getElementById('sel_parcel_outline_width').value = SELECTED_PARCEL_OUTLINE_WIDTH;
+        document.getElementById('sel_parcel_fill_color').value = SELECTED_PARCEL_FILL_COLOR;
+        document.getElementById('sel_parcel_fill_color_opacity').value = SELECTED_PARCEL_FILL_COLOR_OPACITY;
+
+    };
+
+
+    function change_parcel_settings(){
+
+      var gen_parcel_outline_color = document.getElementById('gen_parcel_outline_color').value;
+      var gen_parcel_outline_width = document.getElementById('gen_parcel_outline_width').value;
+      var gen_parcel_fill_color = document.getElementById('gen_parcel_fill_color').value;
+      var gen_parcel_fill_color_opacity = document.getElementById('gen_parcel_fill_color_opacity').value;
+
+      var sel_parcel_outline_color = document.getElementById('sel_parcel_outline_color').value;
+      var sel_parcel_outline_width = document.getElementById('sel_parcel_outline_width').value;
+      var sel_parcel_fill_color = document.getElementById('sel_parcel_fill_color').value;
+      var sel_parcel_fill_color_opacity = document.getElementById('sel_parcel_fill_color_opacity').value;
+
+      GENERAL_PARCEL_OUTLINE_COLOR = String(gen_parcel_outline_color);
+      GENERAL_PARCEL_OUTLINE_WIDTH = gen_parcel_outline_width * 1;
+      GENERAL_PARCEL_FILL_COLOR = String(gen_parcel_fill_color);
+      GENERAL_PARCEL_FILL_COLOR_OPACITY = gen_parcel_fill_color_opacity / 100;
+
+      SELECTED_PARCEL_OUTLINE_COLOR = sel_parcel_outline_color;
+      SELECTED_PARCEL_OUTLINE_WIDTH = sel_parcel_outline_width * 1;
+      SELECTED_PARCEL_FILL_COLOR = String(sel_parcel_fill_color);
+      SELECTED_PARCEL_FILL_COLOR_OPACITY = sel_parcel_fill_color_opacity / 100;
+
+      settings = JSON.parse(localStorage.getItem("PARCELS_SETTINGS"));
+
+      settings.GENERAL_PARCEL_OUTLINE_COLOR = GENERAL_PARCEL_OUTLINE_COLOR;
+      settings.GENERAL_PARCEL_OUTLINE_WIDTH = GENERAL_PARCEL_OUTLINE_WIDTH;
+      settings.GENERAL_PARCEL_FILL_COLOR = GENERAL_PARCEL_FILL_COLOR;
+      settings.GENERAL_PARCEL_FILL_COLOR_OPACITY = GENERAL_PARCEL_FILL_COLOR_OPACITY;
+
+      settings.SELECTED_PARCEL_OUTLINE_COLOR = SELECTED_PARCEL_OUTLINE_COLOR;
+      settings.SELECTED_PARCEL_OUTLINE_WIDTH = SELECTED_PARCEL_OUTLINE_WIDTH;
+      settings.SELECTED_PARCEL_FILL_COLOR = SELECTED_PARCEL_FILL_COLOR;
+      settings.SELECTED_PARCEL_FILL_COLOR_OPACITY = SELECTED_PARCEL_FILL_COLOR_OPACITY;
+
+      localStorage.setItem("PARCELS_SETTINGS", JSON.stringify(settings));
+
+      for (let code in parcels_data){
+        parcel = parcels_data[code].map_item;
+
+        parcel.setStyle({
+                 color: GENERAL_PARCEL_OUTLINE_COLOR,
+                 fillOpacity: GENERAL_PARCEL_FILL_COLOR_OPACITY,
+                 fillColor: GENERAL_PARCEL_FILL_COLOR,
+                 weight: GENERAL_PARCEL_OUTLINE_WIDTH,
+                 });
+
+
+      };
+
+      selected_parcel_data.map_item.setStyle({
+               color: SELECTED_PARCEL_OUTLINE_COLOR,
+               fillOpacity: SELECTED_PARCEL_FILL_COLOR_OPACITY,
+               fillColor: SELECTED_PARCEL_FILL_COLOR,
+               weight: SELECTED_PARCEL_OUTLINE_WIDTH,
+      });
+
+    };
+
+
+    function convert_coordinates(){
+        // Note that the URL is hardcoded
+        // Must be changed anytime the view URL changes
+
+        var oldsrid = document.getElementById('transform_modal_old_coordinatesystems').value;
+        var oldfeaturecoords = document.getElementById('transform_modal_old_coordinates').value;
+        var newsrid = document.getElementById('transform_modal_new_coordinatesystems').value;
+        var oldfeature = "MULTIPOINT(" + String(oldfeaturecoords) + ")";
+
+        // 'convertcoordinates/<str:oldsrid>/<str:oldfeature>/<str:newsrid>'
+        var url = "/convertcoordinates/" + oldsrid + "/" + oldfeature + "/" + newsrid;
+
+        fetch(url, {
+        method: "GET",
+        headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(response => {
+            return response.json()
+        })
+        .then(new_feature => {
+            // wkt format =>> 'MULTIPOINT (1 2, 0 0, 0 8)'
+            // required format =>> 1 2, 0 0, 0 8
+
+            var new_coordinates = String(new_feature[0].wkt).split("(")[1].split(")")[0];
+            new_coordinates_element = document.getElementById('transform_modal_new_coordinates');
+            new_coordinates_element.value = String(new_coordinates);
+        })
+        .catch(error => {
+            alert("Failed!");
+        })
+    };
+
+
+    function do_coordinate_conversion(){
+        var oldsrid = document.getElementById('transform_modal_old_coordinatesystems').value;
+        var oldfeaturecoords = document.getElementById('transform_modal_old_coordinates').value;
+        var newsrid = document.getElementById('transform_modal_new_coordinatesystems').value;
+
+        if (oldsrid !== "" && oldfeaturecoords !== "" && newsrid !== ""){
+            convert_coordinates();
+
+        }else{
+            alert("Fill all input fields");
+
+        };
+    };
+
+
+    function output_string(data){
+        var item;
+        if (data !== null && data !== undefined){
+            item = String(data);
+        }else{
+            item = "";
+        };
+
+        return item
+    };
+
+
+    // This function is for getting the csrf_token cookie value
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    };
+
+</script>
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.dropdown-trigger');
+    var instances = M.Dropdown.init(elems, {
+      coverTrigger: false,
+      constrainWidth: false,
+    });
+  });
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.modal');
+    var instances = M.Modal.init(elems, {});
+  });
+</script>
+<script>
+  window.addEventListener("DOMContentLoaded", event => {
+    const options = {
+      duration: 300,
+      onShow: null,
+      swipeable: false,
+      responsiveThreshold: Infinity
+    };
+
+    const tabsContainer = document.querySelector(".tabs");
+    M.Tabs.init(tabsContainer, options);
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.fixed-action-btn');
+    var instances = M.FloatingActionButton.init(elems, {});
+  });
+
+  var slider = document.getElementById('flo');
+  noUiSlider.create(slider, {
+    start: [0, 1],
+    connect: true,
+    step: 0.1,
+    orientation: 'horizontal',
+    range: {
+      'min': 0,
+      'max': 1
+    },
+    format: wNumb({
+      decimals: 0
+    })
+  });
+</script>
+<!--<script type="module">-->
+<!--  import noUiSlider from '/nouislider/dist/nouislider.mjs';-->
+
+
+<!--      fetch(url, {-->
+<!--        method: 'POST',-->
+<!--        credentials: 'same-origin',-->
+<!--        headers: {-->
+<!--          'Accept': 'application/json',-->
+<!--          'X-Requested-With': 'XMLHttpRequest',-->
+<!--          'X-CSRFToken': getCookie('csrftoken')-->
+<!--        },-->
+<!--        body: JSON.stringify(body_data)-->
+<!--      })-->
+<!--      .then(response => {-->
+<!--        return response.json()-->
+<!--      })-->
+<!--      .then(settings_data => {-->
+<!--        modify_plotted_parcels_settings(settings_data);-->
+<!--      })-->
+<!--</script>-->
+
+<!--function create_parcel_settings(){-->
+
+<!--if (localStorage.getItem("GENERAL_PARCEL_OUTLINE_COLOR") !== null){-->
+<!--GENERAL_PARCEL_OUTLINE_COLOR = localStorage.getItem("GENERAL_PARCEL_OUTLINE_COLOR");-->
+<!--}else{-->
+<!--GENERAL_PARCEL_OUTLINE_COLOR = "#070FF2";-->
+<!--localStorage.setItem("GENERAL_PARCEL_OUTLINE_COLOR", GENERAL_PARCEL_OUTLINE_COLOR);-->
+<!--};-->
+
+
+<!--if (localStorage.getItem("GENERAL_PARCEL_OUTLINE_WIDTH") !== null){-->
+<!--GENERAL_PARCEL_OUTLINE_WIDTH = parseInt(localStorage.getItem("GENERAL_PARCEL_OUTLINE_WIDTH"));-->
+<!--}else{-->
+<!--GENERAL_PARCEL_OUTLINE_WIDTH = 2;-->
+<!--localStorage.setItem("GENERAL_PARCEL_OUTLINE_WIDTH", String(GENERAL_PARCEL_OUTLINE_WIDTH));-->
+<!--};-->
+
+
+<!--if (localStorage.getItem("GENERAL_PARCEL_FILL_COLOR") !== null){-->
+<!--GENERAL_PARCEL_FILL_COLOR = localStorage.getItem("GENERAL_PARCEL_FILL_COLOR");-->
+<!--}else{-->
+<!--GENERAL_PARCEL_FILL_COLOR = "#070FF2";-->
+<!--localStorage.setItem("GENERAL_PARCEL_FILL_COLOR", GENERAL_PARCEL_FILL_COLOR);-->
+<!--};-->
+
+<!--if (localStorage.getItem("GENERAL_PARCEL_FILL_COLOR_OPACITY") !== null){-->
+<!--GENERAL_PARCEL_FILL_COLOR_OPACITY = localStorage.getItem("GENERAL_PARCEL_FILL_COLOR_OPACITY");-->
+<!--}else{-->
+<!--GENERAL_PARCEL_FILL_COLOR_OPACITY = 0;-->
+<!--localStorage.setItem("GENERAL_PARCEL_FILL_COLOR_OPACITY", String(GENERAL_PARCEL_FILL_COLOR_OPACITY));-->
+<!--};-->
+
+
+<!--if (localStorage.getItem("SELECTED_PARCEL_OUTLINE_COLOR") !== null){-->
+<!--SELECTED_PARCEL_OUTLINE_COLOR = localStorage.getItem("SELECTED_PARCEL_OUTLINE_COLOR");-->
+<!--}else{-->
+<!--SELECTED_PARCEL_OUTLINE_COLOR = "#070FF2";-->
+<!--localStorage.setItem("SELECTED_PARCEL_OUTLINE_COLOR", SELECTED_PARCEL_OUTLINE_COLOR);-->
+<!--};-->
+
+
+<!--if (localStorage.getItem("SELECTED_PARCEL_OUTLINE_WIDTH") !== null){-->
+<!--SELECTED_PARCEL_OUTLINE_WIDTH = parseInt(localStorage.getItem("SELECTED_PARCEL_OUTLINE_WIDTH"));-->
+<!--}else{-->
+<!--SELECTED_PARCEL_OUTLINE_WIDTH = 2;-->
+<!--localStorage.setItem("SELECTED_PARCEL_OUTLINE_WIDTH", String(SELECTED_PARCEL_OUTLINE_WIDTH));-->
+<!--};-->
+
+
+<!--if (localStorage.getItem("SELECTED_PARCEL_FILL_COLOR") !== null){-->
+<!--SELECTED_PARCEL_FILL_COLOR = localStorage.getItem("SELECTED_PARCEL_FILL_COLOR");-->
+<!--}else{-->
+<!--SELECTED_PARCEL_FILL_COLOR = "#070FF2";-->
+<!--localStorage.setItem("SELECTED_PARCEL_FILL_COLOR", SELECTED_PARCEL_FILL_COLOR);-->
+<!--};-->
+
+<!--if (localStorage.getItem("SELECTED_PARCEL_FILL_COLOR_OPACITY") !== null){-->
+<!--SELECTED_PARCEL_FILL_COLOR_OPACITY = localStorage.getItem("SELECTED_PARCEL_FILL_COLOR_OPACITY");-->
+<!--}else{-->
+<!--SELECTED_PARCEL_FILL_COLOR_OPACITY = 0;-->
+<!--localStorage.setItem("SELECTED_PARCEL_FILL_COLOR_OPACITY", String(SELECTED_PARCEL_FILL_COLOR_OPACITY));-->
+<!--};-->
+
+
+<!--document.getElementById('gen_parcel_outline_color').value = GENERAL_PARCEL_OUTLINE_COLOR;-->
+<!--document.getElementById('gen_parcel_outline_width').value = GENERAL_PARCEL_OUTLINE_WIDTH;-->
+<!--document.getElementById('gen_parcel_fill_color').value = GENERAL_PARCEL_FILL_COLOR;-->
+<!--document.getElementById('gen_parcel_fill_color_opacity').value = parseInt(GENERAL_PARCEL_FILL_COLOR_OPACITY * 100);-->
+
+<!--document.getElementById('sel_parcel_outline_color').value = SELECTED_PARCEL_OUTLINE_COLOR;-->
+<!--document.getElementById('sel_parcel_outline_width').value = SELECTED_PARCEL_OUTLINE_WIDTH;-->
+<!--document.getElementById('sel_parcel_fill_color').value = SELECTED_PARCEL_FILL_COLOR;-->
+<!--document.getElementById('sel_parcel_fill_color_opacity').value = parseInt(SELECTED_PARCEL_FILL_COLOR_OPACITY * 100);-->
+
+<!--};-->
+
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+    .brass {
+      height: 80%;
+      margin-bottom: auto;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+
+    span.field-icon {
+      float: right;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+      z-index: 2;
+    }
+  </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <title>Ghadastre</title>
+</head>
+
+<body class="grey lighten-3">
+<header style=" position:fixed;top:0;left:0; right: 0;width:100%;">
+    <nav>
+        <div class="nav-wrapper black white-text">
+            <div style="padding-left: 15px; padding-right: 15px;">
+
+                <a href="{% url 'homepage' %}" class="brand-logo left">Ghadastre</a>
+                <ul class="right show-on-med-and-down valign-wrapper">
+                    <li class="hide"><a href="#" data-target="modal1" class="waves-effect white-text modal-trigger">Sign Up | Sign In</a></li>
+                    <li><a href="#" class="waves-effect white-text"><i class="material-icons left">account_circle</i>
+                        {{request.user.username}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main style="width: 100%;">
+
+    <div style="width: 100%;" class="grey lighten-3">
+        <div class="container">
+
+            <h4 style="height: 50px;"></h4>
+            <h4 class="center">OWNER DETAILS</h4>
+            <h6 style="height: 5px;"></h6>
+
+            <div class="row">
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Owner Id: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.code }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        First Name: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.firstname }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Surname: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.surname }}</strong>
+                    </p>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Other Names: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.othernames }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Town: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.town }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        District: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.district }}</strong>
+                    </p>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Region: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.region }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Country: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.country }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Address Line 1: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.addressline1 }}</strong>
+                    </p>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Address Line 2: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.addressline2 }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Email: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.email }}</strong>
+                    </p>
+                    </p>
+                </div>
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Telephone Line 1: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.telephoneline1 }}</strong>
+                    </p>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 m4 l4 valign-wrapper">
+                    <p class="left">
+                        Telephone Line 2: &nbsp;
+                    <p class="right">
+                        <strong>{{ parcelowner.telephoneline2 }}</strong>
+                    </p>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="page-footer black white-text">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h6 class="white-text">Ghadastre</h6>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container">
+            © 2022 Copyright Ghadastre
+            <a class="grey-text text-lighten-4 right" href="{% url 'contributors' %}">Contributors</a>
+        </div>
+    </div>
+</footer>
+</body>
+
+</html>
